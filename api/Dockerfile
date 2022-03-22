@@ -6,5 +6,4 @@ RUN apk add tzdata
 RUN mkdir /home/http
 WORKDIR /home/http
 RUN npm i nodemon@latest -g
-RUN npm install
-CMD nodemon -L app.js
+CMD yarn && yarn start:dev
