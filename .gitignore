@@ -3,6 +3,7 @@ web/.dockerignore
 web/npm-debug.log*
 web/yarn-debug.log*
 web/yarn-error.log*
+web/Dockerfile
 
 api/node_modules
 api/config
@@ -10,5 +11,7 @@ api/.dockerignore
 api/npm-debug.log*
 api/yarn-debug.log*
 api/yarn-error.log*
+web/Dockerfile
 
 docker-compose.yml
+.gitignore
