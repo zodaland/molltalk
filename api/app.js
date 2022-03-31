@@ -11,9 +11,16 @@ const app = express()
 const port = 9000
 const server = http.createServer(app)
 
+const cors = require('cors');
+
 //webSocket 서버 실행
 webSocketServer(server)
 
+//cors
+app.use(cors({
+    origin: 'https://mt.zodaland.com',
+    credentials: true,
+}));
 //바디 파싱
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
@@ -36,14 +43,12 @@ app.use((err, req, res, next) => {
 	res.status(500).send('서버 에러')
 });
 
-server.listen(port, () => {
-	console.log('express websocket integration server start')
-})
-//mongodb 연결
-const mongoose = require('mongoose')
-const conf = require('./config/db_config')
-mongoose.Promise = global.Promise
+if (process.env.NODE_ENV !== 'test') {
+	server.listen(port, () => {
+		console.log('express websocket integration server start')
+	})
+}
+const mongoose = require('./library/mongodb');
+mongoose.connect();
 
-mongoose.connect(conf.mongoUri, { useNewUrlParser: true, useUnifiedTopology: true })
-.then(() => console.log('Successfully connected to mongodb'))
-.catch(e => console.log(e))
+module.exports = app;
