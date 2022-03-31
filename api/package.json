@@ -1,8 +1,8 @@
 {
   "name": "node-app",
   "version": "1.0.0",
-  "license": "ISC",
-  "author": "",
+  "license": "UNLICENSED",
+  "author": "Zodaland <me@zodaland.com> (https://zodaland.com)",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
