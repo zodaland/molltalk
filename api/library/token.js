@@ -1,25 +1,40 @@
-const jwt = require('jsonwebtoken')
-//ÅäÅ« µðÄÚµå
-exports.decode = (token, secretKey) => {
-	return new Promise((resolve, reject) => {
-		jwt.verify(token, secretKey, (error, decoded) => {
-			if (error) {
-				reject(error)
-			}
-			resolve(decoded)
-		})
-	})
-}
-//request³»¿¡¼­ ÅäÅ«À» Ã£Àº µÚ ¸®ÅÏ
+const jwt = require('jsonwebtoken');
+const jwtConfig = require('../config/jwt_config');
+//í† í° ë””ì½”ë“œ
+exports.decode = (token, secretKey) => new Promise((resolve, reject) => {
+    jwt.verify(token, secretKey, (error, decoded) => {
+        if (error) {
+            reject(error);
+        }
+        resolve(decoded);
+    });
+});
+//requestë‚´ì—ì„œ í† í°ì„ ì°¾ì€ ë’¤ ë¦¬í„´
 //express : cookies, ws : headers['cookie']
 exports.get = (req) => {
-	let token = ''
+	let token = '';
 	if (req.cookies !== undefined) {
-		token = req.cookies.token
+		token = req.cookies.token;
 	} else if (req.headers['cookie'] !== undefined) {
-		const cookies = req.headers['cookie'].split('; ')
-		const cookie = cookies.find(e => e.indexOf('token=') === 0)
-		token = cookie.split('=')[1]
+		const cookies = req.headers['cookie'].split('; ');
+		const cookie = cookies.find(e => e.indexOf('token=') === 0);
+		token = cookie.split('=')[1];
 	}
-	return token
-}
+	return token;
+};
+exports.set = (payload) => new Promise((resolve, reject) => {
+    jwt.sign(
+        payload,
+        jwtConfig.secretKey,
+        {
+            expiresIn: '1d',
+            issuer: 'zodaland.com',
+            subject: 'refreshToken'
+        }, (err, token) => {
+            if (err) {
+                console.log(err);
+                reject();
+            }
+            resolve(token);
+    });
+});
