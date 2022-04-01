@@ -1,9 +1,9 @@
 const router = require('express').Router()
-const controller = require('./controller')
+const roomUserController = require('./roomUserController')
 
-router.get('/user', controller.findRooms)
-router.post('/user', controller.create)
-router.delete('/:no/user', controller.delete)
+router.get('/user', roomUserController.findRoomUsers)
+router.post('/user', roomUserController.create)
+router.delete('/:no/user', roomUserController.delete)
 
 
 module.exports = router

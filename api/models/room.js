@@ -1,59 +1,30 @@
-const db = require('./db')
+const db = require('../library/db');
 
-const Room = {
-	getConnection : (data) => {
-		return new Promise((resolve, reject) => {
-			Room.params = data
+exports.create = async (userNo, roomName) => {
+    try {
+        const { insertId } = await db.execute(
+            "INSERT INTO room (reg_date, name) VALUES (DATE_FORMAT(NOW(), '%Y%m%d%H%i%s'), ?)",
+            body.name
+        );
+        
+        await db.execute(
+            "INSERT INTO room_user (user_no, room_no, join_date) VALUES (?, ?, DATE_FORMAT(NOW(), '%Y%m%d%H%i%s'))",
+            [userNo, insertId]
+        );
+        return ({ status: 201 });
+    } catch (error) {
+        throw new Error();
+    }
+};
 
-			db.getConnection((err, con) => {
-				if (err) {
-					reject(err)
-				}
-				resolve(con)
-			})
-		})
-	},
-
-	create : (con) => {
-		return new Promise((resolve, reject) => {
-			var sql = "INSERT INTO room (reg_date, private) VALUES (DATE_FORMAT(NOW(), '%Y%m%d%H%i%s'), ?)";
-			con.query(sql, Room.params, (err, rows) => {
-				con.release()
-				if (err) {
-					reject(err)
-				}
-				resolve(rows)
-			})
-		})
-	},
-
-	find : (con) => {
-		return new Promise((resolve, reject) => {
-			var sql = "SELECT no, reg_date, private FROM room WHERE no = ?";
-
-			con.query(sql, Room.params, (err, rows) => {
-				con.release()
-				if (err) {
-					reject(err)
-				}
-				resolve(rows)
-			})
-		})
-	},
-
-	delete : (con) => {
-		return new Promise((resolve, reject) => {
-			var sql = "DELETE FROM room WHERE no = ?";
-
-			con.query(sql, Room.params, (err, rows) => {
-				con.release()
-				if (err) {
-					reject(err)
-				}
-				resolve(rows)
-			})
-		})
-	}
+exports.findsByNo = async (userNo) => {
+    try {
+        const data = await db.execute(
+            'SELECT room.no, room.name FROM room LEFT JOIN room_user ON room.no = room_user.room_no WHERE room_user.user_no = ?',
+            userNo
+        );
+        return ({ data, status: 200 });
+    } catch (error) {
+        throw new Error();
+    }
 }
-
-module.exports = Room

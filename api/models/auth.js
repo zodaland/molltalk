@@ -1,16 +1,16 @@
 const hash = require('../library/hash');
 const jwt = require('../library/token');
 const db = require('../library/db');
-
+//유저를 생성한다.
 exports.create = async (body) => {
-    const { id, password, name } = body;
     try {
-        const userCheckRes = await db.execute(
+        const { id, password, name } = body;
+        const [userCheckRes] = await db.execute(
             'SELECT count(no) as count FROM user WHERE id = ?',
             id
         );
-        const count = userCheckRes[0].count;
-        if (count > 0) {
+        if (!userCheckRes || !userCheckRes.count) throw new Error();
+        if (userCheckRes.count > 0) {
             return { status: 403 };
         }
 
@@ -21,15 +21,13 @@ exports.create = async (body) => {
         );
         return { statue: 201 };
     } catch (error) {
-        console.log(error);
-        return { status: 500 };
+        throw new Error();
     }
 };
 
 exports.login = async (body, ip) => {
-    const { id, password } = body;
-
     try {
+        const { id, password } = body;
         const hashPassword = hash.convert(password);
         const verifyRes = await db.execute(
             'SELECT no,id, name FROM user WHERE id = ? AND password = ?',
@@ -47,7 +45,6 @@ exports.login = async (body, ip) => {
 
         return { status: 200, result: { data, token } };
     } catch (error) {
-        console.log(error);
-        return { status: 500 };
+        throw new Error();
     }
 };
