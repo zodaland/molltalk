@@ -28,3 +28,16 @@ exports.findsByNo = async (userNo) => {
         throw new Error();
     }
 }
+
+exports.findNameByNo = async (roomNo) => {
+    try {
+        const [data] = await db.execute(
+            'SELECT name FROM room WHERE no = ?',
+            roomNo
+        );
+        return { status: 200, data };
+    } catch(error) {
+        console.log(error);
+        throw new Error();
+    }
+}
