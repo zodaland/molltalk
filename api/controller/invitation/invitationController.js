@@ -1,11 +1,11 @@
 const invitationModel = require('../../models/invitation');
 
 exports.create = async (req, res) => {
-    if (!body.roomNo || !body.invitedUserNo|| !req.decoded || !req.decoded.no) {
+    if (!req.body.roomNo || !req.body.invitedUserNo|| !req.decoded || !req.decoded.no) {
         res.status(400).json();
         return;
     }
-    if (req.decoded.no === body.invitedUserNo) {
+    if (req.decoded.no === req.body.invitedUserNo) {
         res.status(400).json();
         return;
     }
@@ -23,11 +23,11 @@ exports.create = async (req, res) => {
     }
 };
 exports.findsByInvitedUser = async (req, res) => {
-    if (!req.params.invitedUserNo) {
+    if (!req.decoded || !req.decoded.no) {
         res.status(400).json();
         return;
     }
-    const invitedUserNo = req.params.no;
+    const invitedUserNo = req.decoded.no;
     
     try {
         const { status, data } = await invitationModel.findsByInvitedUser(invitedUserNo);
@@ -38,14 +38,15 @@ exports.findsByInvitedUser = async (req, res) => {
 };
 //유저 넘버와 방넘버를 받아서 삭제한다. 방 참여 거절용
 exports.delete = async (req, res) => {
-    if (!req.body.roomNo || !req.body.invitedUserNo) {
+    if (!req.body.no || !req.decoded || !req.decoded.no) {
         res.status(400).json();
         return;
     }
-    const { roomNo, invitedUserNo } = req.body;
+    const roomNo = req.body.no;
+    const userNo = req.decoded.no;
     
     try {
-        const { status } = await invitationModel.delete(roomNo, invitedUserNo);
+        const { status } = await invitationModel.delete(roomNo, userNo);
         res.status(status).json();
     } catch (error) {
         res.status(500).json();
