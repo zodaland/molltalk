@@ -48,29 +48,44 @@ describe('로그인 테스트', () => {
 
         expect(res.statusCode).toBe(400);
     });
+    test('ip 유효성 오류 실패 상테 400 테스트', async () => {
+        req.body = { id: 'test', password: 'test' };
+        await userController.login(req, res);
+
+        expect(res.statusCode).toBe(400);
+    });
+    test('body 유효성 오류 실패 상테 400 테스트', async () => {
+        req.headers = { 'x-real-ip': '123.123.123.123' };
+        await userController.login(req, res);
+
+        expect(res.statusCode).toBe(400);
+    });
     test('authModel.login 호출 / 실패 status 테스트', async () => {
         const status = 403
         req.body = { id: 'test', password: 'test' };
+        req.headers = { 'x-real-ip': '123.123.123.123' };
         authModel.login.mockReturnValue({ status });
         await userController.login(req, res);
         
-        expect(authModel.login).toBeCalledWith(req.body);
+        expect(authModel.login).toBeCalledWith(req.body, req.headers['x-real-ip']);
         expect(res.statusCode).toBe(status);
     });
     test('authModel.login 호출 / 성공 status 테스트, 데이터 및 토큰 확인', async () => {
-        const status = 201;
+        const status = 200;
         const result = { data: { no: 1, id: 'test', name: 'test' }, token: 'test' };
         req.body = { id: 'test', password: 'test' };
+        req.headers = { 'x-real-ip': '123.123.123.123' };
         authModel.login.mockReturnValue({ status, result });
         await userController.login(req, res);
 
-        expect(authModel.login).toBeCalledWith(req.body);
+        expect(authModel.login).toBeCalledWith(req.body, req.headers['x-real-ip']);
         expect(res.statusCode).toBe(status);
         expect(res._getJSONData()).toStrictEqual(result.data);
         expect(res.cookies.token.value).toBe(result.token);
     });
     test('에러발생 status 500 테스트', async () => {
         req.body = { id: 'test', password: 'test' };
+        req.headers = { 'x-real-ip': '123.123.123.123' };
         authModel.login.mockReturnValue(Promise.reject());
         await userController.login(req, res);
 

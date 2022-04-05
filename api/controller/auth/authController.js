@@ -10,7 +10,8 @@ exports.register = async (req, res) => {
     }
     
     try {
-        const { status } = await authModel.create(body);
+        const createRes = await authModel.create(body);
+        const { status } = createRes;
         res.status(status).json();
     } catch (error) {
         res.status(500).json();
@@ -18,36 +19,32 @@ exports.register = async (req, res) => {
 }
 
 exports.login = async (req, res) => {
-    const body = req.body;
-
-    if (!body.id || !body.password) {
+    if (!req.body.id || !req.body.password || !req.headers['x-real-ip']) {
         res.status(400).json();
         return;
     }
+    const ip = req.headers['x-real-ip'];
+    const body = req.body;
 
     try {
-        const { status, result } = await authModel.login(body);
-        if (status !== 201) {
+        const loginRes = await authModel.login(body, ip);
+        const { status } = loginRes;
+        if (status !== 200) {
             res.status(status).json();
             return;
         }
-        const { data, token } = result;
+        const { data, token } = loginRes.result;
         res
-        .cookie('token', token, { path: '/', expires: new Date(Date.now() + (360000 * 24)), sameSite: 'none', secure: true, httpOnly: true })
+        .cookie('token', token, { path: '/', expires: new Date(Date.now() + (360000 * 24)), sameSite: 'none', secure: true })
         .status(status).json(data);
     } catch (error) {
         res.status(500).json();
     }
 };
 
-exports.check = (req, res) => {
-	res.json({ ...req.decoded })
-}
-
 exports.logout = (req, res) => {
 	res
 	.cookie('token', '', { expires: new Date(Date.now() - (360000 * 24)) })
-	.json({
-		code: '0000'
-	})
+	.status(200)
+    .json()
 }

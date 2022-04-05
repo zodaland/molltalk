@@ -9,7 +9,9 @@ exports.create = async (body) => {
             'SELECT count(no) as count FROM user WHERE id = ?',
             id
         );
-        if (!userCheckRes || !userCheckRes.count) throw new Error();
+        if (typeof userCheckRes === 'undefined') {
+            throw new Error();
+        }
         if (userCheckRes.count > 0) {
             return { status: 403 };
         }
@@ -19,7 +21,7 @@ exports.create = async (body) => {
             "INSERT INTO user (id, password, name, reg_date) VALUES (?, ?, ?, DATE_FORMAT(NOW(), '%Y%m%d%H%i%s'))",
             [id, hashPassword, name]
         );
-        return { statue: 201 };
+        return { status: 201 };
     } catch (error) {
         throw new Error();
     }
@@ -29,11 +31,12 @@ exports.login = async (body, ip) => {
     try {
         const { id, password } = body;
         const hashPassword = hash.convert(password);
-        const verifyRes = await db.execute(
+        const [verifyRes] = await db.execute(
             'SELECT no,id, name FROM user WHERE id = ? AND password = ?',
             [id, hashPassword]
         );
-        const data = verifyRes[0];
+        if (!verifyRes) return ({ status: 401 });
+        const data = { ...verifyRes };
 
         const unixEpoch = Math.floor(new Date().getTime() / 1000);
         const hashIp = hash.convert(ip);
