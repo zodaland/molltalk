@@ -20,3 +20,7 @@ exports.findById = async (req, res) => {
         res.status(500).json();
     }
 }
+
+exports.check = (req, res) => {
+	res.json({ ...req.decoded })
+}
