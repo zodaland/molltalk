@@ -1,8 +1,8 @@
 const jwt = require('jsonwebtoken');
 const jwtConfig = require('../config/jwt_config');
 //토큰 디코드
-exports.decode = (token, secretKey) => new Promise((resolve, reject) => {
-    jwt.verify(token, secretKey, (error, decoded) => {
+exports.decode = (token) => new Promise((resolve, reject) => {
+    jwt.verify(token, jwtConfig.secretKey, (error, decoded) => {
         if (error) {
             reject(error);
         }
