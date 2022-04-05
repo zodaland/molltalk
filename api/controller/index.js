@@ -1,17 +1,15 @@
-const router = require('express').Router()
-const auth = require('./auth')
-const room = require('./room')
-const invitation = require('./invitation')
-const authCheck = require('../middlewares/auth')
-const user = require('./user')
+const router = require('express').Router();
+const authController = require('./auth');
+const roomController = require('./room');
+const invitationController = require('./invitation');
+const authMiddleware = require('../middlewares/authMiddleware');
+const userController = require('./user');
 
-router.use('/test', user);
+router.use('/auth', authController);
 
-router.use('/auth', auth)
+router.use('/', authMiddleware);
+router.use('/room', roomController);
+router.use('/invitation', invitationController);
+router.use('/user', userController);
 
-router.use('/', authCheck)
-router.use('/room', room)
-router.use('/invitation', invitation)
-router.use('/user', user)
-
-module.exports = router
+module.exports = router;
