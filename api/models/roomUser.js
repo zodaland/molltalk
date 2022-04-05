@@ -7,14 +7,14 @@ exports.create = async (roomNo, userNo) => {
             'SELECT count(no) AS count FROM invitation WHERE room_no = ? AND invited_user_no = ?',
             [roomNo, userNo]
         );
-        if (!inviteRes || !inviteRes.count) throw new Error();
+        if (typeof inviteRes === 'undefined') throw new Error();
         if (inviteRes.count < 1) return { status: 403 };
         //이미 방에 있는지 조회
         const [roomRes] = await db.execute(
             'SELECT count(no) AS count FROM room_user where room_no = ? AND user_no = ?',
             [roomNo, userNo]
         );
-        if (!roomRes || !inviteRes.count) throw new Error()
+        if (typeof roomRes === 'undefined') throw new Error()
         if (roomRes.count > 0) return { status: 403 };
         //초대장은 제거
         await db.execute(
@@ -57,7 +57,7 @@ exports.delete = async (roomNo, userNo) => {
             'SELECT count(no) AS count FROM room_user WHERE room_no = ?',
             roomNo
         );
-        if (!roomUserRes || !roomUserRes.count) return { status: 200 };
+        if (typeof roomUserRes === 'undefined') return { status: 200 };
         //방에 유저가 없으면 방을 제거한다.
         if (roomUserRes.count < 1) {
             await db.execute(
