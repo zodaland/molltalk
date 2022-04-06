@@ -1,6 +1,5 @@
 const token = require('../../library/token');
 const messageController = require('./messageController');
-const pingController = require('./pingController');
 
 module.exports = async (wss) => {
     wss.on('connection', async (ws, req) => {
