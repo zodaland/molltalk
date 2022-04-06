@@ -1,9 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './css/index.css';
 import App from './components/App';
 import reportWebVitals from './reportWebVitals';
 import { RecoilRoot } from 'recoil'
+import './css/index.css';
 
 ReactDOM.render(<RecoilRoot><App /></RecoilRoot>, document.getElementById('root'));
 
