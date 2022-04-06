@@ -19,7 +19,7 @@ export function check(token) {
 		axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
 	}
 
-	return axios.get('/auth/check')
+	return axios.get('/user/check')
 	.then((response) => {
 		return response
 	})

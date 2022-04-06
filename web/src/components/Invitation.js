@@ -65,16 +65,12 @@ const UserComponent = ({ id, invitedUserNo }) => {
                 alert('이미 방에 있습니다');
                 return;
             }
-            if (inviteRes.status !== 200) throw new Error();
+            if (inviteRes.status !== 201) throw new Error();
             const roomName = inviteRes.data;
 
             if (ws.current && ws.current.readyState === WebSocket.OPEN) {
                 ws.current.send(JSON.stringify({
-                    type: 'ALARM',
-                    command: 'invite',
-                    roomNo: params.roomNo,
-                    id: user.id,
-                    name: roomName,
+                    type: 'INVITE',
                     no: invitedUserNo,
                 }));
             }

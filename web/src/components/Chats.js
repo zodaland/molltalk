@@ -12,24 +12,6 @@ const Chats = () => {
     const item = useRecoilValue(itemState);
 	//dom 접근 ref 사용
 	let boxRef = useRef(null)
-	const addItem = (item) => {
-		switch (item.command) {
-			case 'join':
-				setItems(item.content)
-				break
-			default:
-					const myItem = {
-						name: item.name,
-						content: item.content
-					}
-
-					setItems([
-						...items,
-						myItem
-					])
-				break
-		}
-	}
 
 	let style = {
 		width: '350px',
@@ -40,21 +22,16 @@ const Chats = () => {
 
 	//item이 바뀔때마다 호출
 	useEffect(() => {
-		if (item.type === 'CHAT') {
-			switch(item.command) {
-				case 'join':
-                console.log(item);
-					addItem(item)
-					break
-				case 'send':
-					addItem(item)
-					break
-				case 'myself':
-					addItem(item)
-				default:
-					break
-			}
-		}
+        switch(item.type) {
+            case 'JOIN':
+                setItems(item.data.chats);
+                break;
+            case 'SEND':
+                setItems([...items, item.data]);
+                break;
+            default:
+                break
+        }
 	}, [item])
 	//채팅이 갱신될때마다 스크롤을 하단으로 내린다.
 	useEffect(() => {
@@ -68,7 +45,7 @@ const Chats = () => {
     useEffect(() => {
         if (roomNo === 0) return;
         if (!ws.current || ws.current.readyState !== WebSocket.OPEN) return;
-        const data = { type: 'CHAT', command: 'join', room: roomNo };
+        const data = { type: 'JOIN', no: roomNo };
 		ws.current.send(JSON.stringify(data));
     }, [roomNo])
 

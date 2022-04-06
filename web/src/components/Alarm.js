@@ -15,27 +15,24 @@ const Alarm = () => {
     const { user } = useRecoilValue(userState);
     const setRooms = useSetRecoilState(roomsState);
     
-    const handleJoin = async (roomNo) => {
+    const handleJoin = async (no) => {
         try {
-            const joinRes = await RoomUser.create({ roomNo });
-            if (joinRes.status !== 200) {
+            const joinRes = await RoomUser.create({ no });
+            if (joinRes.status !== 201) {
                 throw new Error();
             }
             const res = await Room.find();
             if (res.status !== 200) throw new Error();
             setRooms(res.data);
-            setAlarms(alarms.filter(alarm => alarm.roomNo !== roomNo));
+            setAlarms(alarms.filter(alarm => alarm.no!== no));
         } catch (error) {
             alert('방 참여 실패');
         }
     };
 
     useEffect(() => {
-        if (item.command === 'invite') {
-            console.log(item);
-            const myAlarm = { ...item };
-            delete myAlarm.command;
-            setAlarms([...alarms, myAlarm]);
+        if (item.type === 'INVITE') {
+            setAlarms([...alarms, item.data]);
         }
     }, [item]);
 
@@ -47,7 +44,7 @@ const Alarm = () => {
                 if (res.status !== 200) throw new Error();
                 const { data } = res;
                 const myAlarms = data.map((myAlarm) => ({
-                    roomNo: myAlarm.room_no,
+                    no: myAlarm.room_no,
                     id: myAlarm.id,
                     name: myAlarm.name,
                 }));
@@ -60,7 +57,7 @@ const Alarm = () => {
     return (
         <div>
         {alarms.map(alarm => (
-            <button onClick={() => handleJoin(alarm.roomNo)}>{alarm.name} 입장</button>
+            <button onClick={() => handleJoin(alarm.no)}>{alarm.id}의 초대 {alarm.name}방 입장</button>
         ))}
         </div>
     );

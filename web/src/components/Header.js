@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import '../css/Header.css'
 import * as User from '../services/User'
 
 import { userState } from '../modules/user';
@@ -11,17 +10,8 @@ const Header = () => {
     const handleLogout = async () => {
         try {
             const fetchData = await User.logout()
-            if (fetchData.data.code === '0000') {
-                setUserInfo({
-                    token: '',
-                    isLogin: false,
-                    user: {
-                        no: '',
-                        id: '',
-                        name: ''
-                    }
-                });
-            }
+            if (fetchData.status !== 200) throw new Error();
+            window.location.reload();
         } catch(error) {
             alert('로그아웃 실패');
         }
@@ -62,20 +52,15 @@ const LoginComponent = () => {
                 alert('로그인 실패');
                 return;
             }
-            const { data, accessToken } = fetchData.data;
-
+            const { data } = fetchData;
             setLoginInfo({
                 id: '',
                 password: '',
             });
-
             setUserInfo({
-                token: accessToken,
                 isLogin: true,
                 user: data,
             })
-
-            alert('로그인 성공')
         } catch(error) {
             alert('로그인 실패')
         }

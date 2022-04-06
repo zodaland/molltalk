@@ -20,11 +20,8 @@ const TextInputBox = () => {
 		}
 		if (ws.current && ws.current.readyState === WebSocket.OPEN) {
 			ws.current.send(JSON.stringify({
-				type: 'CHAT',
-				command: 'send',
-				name: user.name,
+				type: 'SEND',
 				content: message,
-                room: roomNo,
 			}))
 
 			setMessage('')

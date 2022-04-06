@@ -8,7 +8,7 @@ export function create(params) {
 }
 
 export function getMyInvitation(params) {
-	return axios.get(`/invitation/to/${params}`)
+	return axios.get(`/invitation/`)
 	.then((response) => {
 		return response;
 	})
