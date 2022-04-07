@@ -2,27 +2,38 @@ import { useState } from 'react'
 import * as User from '../services/User'
 
 import { userState } from '../modules/user';
-import { useRecoilState, useSetRecoilState } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 
 const Header = () => {
-    const [userInfo, setUserInfo] = useRecoilState(userState);
+    const { isLogin } = useRecoilValue(userState);
+
+    return (
+        <header>
+            { isLogin
+                ? <LogoutComponent />
+                : <AuthComponent />
+            }
+        </header>
+    );
+};
+
+const LogoutComponent = () => {
+    const { user } = useRecoilValue(userState);
 
     const handleLogout = async () => {
         try {
             const fetchData = await User.logout()
             if (fetchData.status !== 200) throw new Error();
             window.location.reload();
-        } catch(error) {
+        } catch (error) {
             alert('로그아웃 실패');
         }
     };
 
     return (
-        <div className="header">
-            { userInfo.isLogin
-                ? <button onClick={handleLogout}>로그아웃</button>
-                : <AuthComponent />
-            }
+        <div className="flex justify-between border-b border-black">
+            <span className="m-6 text-2xl">{user.name}</span>
+            <button className="m-4 p-2 text-xl border-2 border-black rounded-md hover:bg-gray-200 transition" onClick={handleLogout}>로그아웃</button>
         </div>
     );
 };
@@ -35,13 +46,13 @@ const AuthComponent = () => {
     };
 
     return (
-        <div className="flex place-content-center w-full h-screen">
-            <div className="md:w-1/5 w-3/5 self-center">
-        {
-            isRegister
-                ? <RegisterComponent handleToggle={handleToggle} />
-                : <LoginComponent handleToggle={handleToggle} />
-        }
+        <div className="flex justify-center w-full h-screen">
+            <div className="lg:w-2/5 w-3/5 self-center">
+                {
+                    isRegister
+                        ? <RegisterComponent handleToggle={handleToggle} />
+                        : <LoginComponent handleToggle={handleToggle} />
+                }
             </div>
         </div>
     );
