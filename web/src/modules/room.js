@@ -1,11 +1,16 @@
-import { atom } from 'recoil'
+/*
+ *  type Room {
+ *    name: string,
+ *    no: number,
+ *  }
+ *
+ *  Room[]
+ *
+ */
 
-export const roomState = atom({
-	key: 'room',
-	default: 0,
-})
+import { atom } from 'recoil';
 
-export const roomsState = atom({
-	key: 'rooms',
+export const roomInfoState = atom({
+	key: 'roomInfoState',
 	default: [],
-})
+});
