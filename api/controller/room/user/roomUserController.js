@@ -1,14 +1,24 @@
 const roomUserModel = require('../../../models/roomUser');
+const chatModel = require('../../../models/chat');
 
 exports.create = async (req, res) => {
-    if (!req.body.no || !req.decoded || !req.decoded.no) {
+    if (!req.body.no || !req.decoded) {
         res.status(400).json();
         return;
     }
     const roomNo = req.body.no;
     const userNo = req.decoded.no;
+    const { id, name } = req.decoded;
     
     try {
+        const chat = {
+            id,
+            name,
+            type: 'ENTER',
+            room: roomNo,
+        };
+        await chatModel.create(chat);
+
         const { status } = await roomUserModel.create(roomNo, userNo);
         res.status(status).json();
     } catch (error) {
@@ -32,14 +42,23 @@ exports.findRoomUsers = async (req, res) => {
 };
 
 exports.delete = async (req, res) => {
-    if (!req.params.no || !req.decoded || !req.decoded.no) {
+    if (!req.params.no || !req.decoded) {
         res.status(400).json();
         return;
     }
     const roomNo = req.params.no;
     const userNo = req.decoded.no;
+    const { id, name } = req.decoded;
     
     try {
+        const chat = {
+            id,
+            name,
+            type: 'EXIT',
+            room: roomNo,
+        };
+        await chatModel.create(chat);
+
         const { status } = await roomUserModel.delete(roomNo, userNo); 
         res.status(status).json();
     } catch (error) {
