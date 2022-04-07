@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react'
-import { WebSocketContext } from '../library/WebSocketProvider'
 
 import { joinedWsMsgState, sentWsMsgState } from '../modules/wsMsg';
 import { chatsState, roomState } from '../modules/chat';
