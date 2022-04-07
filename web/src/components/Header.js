@@ -21,13 +21,31 @@ const Header = () => {
         <div className="header">
             { userInfo.isLogin
                 ? <button onClick={handleLogout}>로그아웃</button>
-                : <LoginComponent />
+                : <AuthComponent />
             }
         </div>
     );
 };
 
-const LoginComponent = () => {
+const AuthComponent = () => {
+    const [isRegister, setIsRegister] = useState(false);
+
+    const handleToggle= () => {
+        setIsRegister(!isRegister);
+    };
+
+    return (
+        <>
+        {
+            isRegister
+                ? <RegisterComponent handleToggle={handleToggle} />
+                : <LoginComponent handleToggle={handleToggle} />
+        }
+        </>
+    );
+}
+
+const LoginComponent = ({ handleToggle }) => {
     const setUserInfo = useSetRecoilState(userState);
     const [loginInfo, setLoginInfo] = useState({
         id: '',
@@ -65,45 +83,32 @@ const LoginComponent = () => {
             alert('로그인 실패')
         }
     };
-
-    const [isRegister, setIsRegister] = useState(false);
-
-    const handleToggleRegister = () => {
-        setIsRegister(!isRegister);
-    };
-
     return (
-        <>
-        { isRegister
-            ? <RegisterComponent handleClear={handleToggleRegister} />
-            : (
-            <div>
-                <button onClick={handleToggleRegister}>회원가입</button>
-                <form onSubmit={handleLogin}>
-                    <input
-                        name="id"
-                        value={loginInfo.id}
-                        placeholder="아이디"
-                        onChange={handleChange}
-                    />
-                    <p/>
-                    <input
-                        type="password"
-                        name="password"
-                        value={loginInfo.password}
-                        placeholder="비밀번호"
-                        onChange={handleChange}
-                    />
-                    <p/>
-                    <button>로그인</button>
-                </form>
-            </div>
-        )}
-        </>
+        <div>
+            <button onClick={handleToggle}>회원가입</button>
+            <form onSubmit={handleLogin}>
+                <input
+                    name="id"
+                    value={loginInfo.id}
+                    placeholder="아이디"
+                    onChange={handleChange}
+                />
+                <p/>
+                <input
+                    type="password"
+                    name="password"
+                    value={loginInfo.password}
+                    placeholder="비밀번호"
+                    onChange={handleChange}
+                />
+                <p/>
+                <button>로그인</button>
+            </form>
+        </div>
     );
 };
 
-const RegisterComponent = ({ handleClear }) => {
+const RegisterComponent = ({ handleToggle }) => {
     const [registerInfo, setRegisterInfo] = useState({
         id: '',
         name: '',
@@ -133,7 +138,7 @@ const RegisterComponent = ({ handleClear }) => {
                 name: '',
                 password: '',
             });
-            handleClear();
+            handleToggle();
 
             alert('회원가입 성공');
         } catch(error) {
@@ -143,7 +148,7 @@ const RegisterComponent = ({ handleClear }) => {
 
     return (
         <div>
-            <button onClick={handleClear}>로그인</button>
+            <button onClick={handleToggle}>로그인</button>
             <form onSubmit={handleRegister}>
                 <input
                     name="id"
