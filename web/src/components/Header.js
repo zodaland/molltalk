@@ -35,13 +35,15 @@ const AuthComponent = () => {
     };
 
     return (
-        <>
+        <div className="flex place-content-center w-full h-screen">
+            <div className="md:w-1/5 w-3/5 self-center">
         {
             isRegister
                 ? <RegisterComponent handleToggle={handleToggle} />
                 : <LoginComponent handleToggle={handleToggle} />
         }
-        </>
+            </div>
+        </div>
     );
 }
 
@@ -85,9 +87,14 @@ const LoginComponent = ({ handleToggle }) => {
     };
     return (
         <div>
-            <button onClick={handleToggle}>회원가입</button>
-            <form onSubmit={handleLogin}>
+            <button
+                className="w-full border-2 border-gray-500 rounded-md text-2xl p-2 bg-gray-100 hover:bg-gray-200 transition mb-12"
+                onClick={handleToggle}>
+                    회원가입
+            </button>
+            <form className="space-y-2" onSubmit={handleLogin}>
                 <input
+                    className="w-full border text-xl p-2"
                     name="id"
                     value={loginInfo.id}
                     placeholder="아이디"
@@ -95,6 +102,7 @@ const LoginComponent = ({ handleToggle }) => {
                 />
                 <p/>
                 <input
+                    className="w-full border text-xl p-2"
                     type="password"
                     name="password"
                     value={loginInfo.password}
@@ -102,7 +110,9 @@ const LoginComponent = ({ handleToggle }) => {
                     onChange={handleChange}
                 />
                 <p/>
-                <button>로그인</button>
+                <button className="w-full rounded-md text-2xl p-2 bg-blue-200 hover:bg-blue-300 transition">
+                    로그인
+                </button>
             </form>
         </div>
     );
@@ -148,9 +158,15 @@ const RegisterComponent = ({ handleToggle }) => {
 
     return (
         <div>
-            <button onClick={handleToggle}>로그인</button>
-            <form onSubmit={handleRegister}>
+            <button
+                className="w-full border-2 border-gray-500 rounded-md text-2xl p-2 bg-gray-100 hover:bg-gray-200 transition mb-12"
+                onClick={handleToggle}
+            >
+                로그인
+            </button>
+            <form className="space-y-2" onSubmit={handleRegister}>
                 <input
+                    className="w-full border text-xl p-2"
                     name="id"
                     value={registerInfo.id}
                     placeholder="아이디"
@@ -158,6 +174,7 @@ const RegisterComponent = ({ handleToggle }) => {
                 />
                 <p/>
                 <input
+                    className="w-full border text-xl p-2"
                     name="name"
                     value={registerInfo.name}
                     placeholder="이름"
@@ -165,6 +182,7 @@ const RegisterComponent = ({ handleToggle }) => {
                 />
                 <p/>
                 <input
+                    className="w-full border text-xl p-2"
                     type="password"
                     name="password"
                     value={registerInfo.password}
@@ -172,7 +190,9 @@ const RegisterComponent = ({ handleToggle }) => {
                     onChange={handleChange}
                 />
                 <p/>
-                <button>등록</button>
+                <button className="w-full rounded-md text-2xl p-2 bg-green-200 hover:bg-green-300 transition">
+                    등록
+                </button>
             </form>
         </div>
     );
