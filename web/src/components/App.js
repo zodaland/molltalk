@@ -16,51 +16,53 @@ import { roomState } from '../modules/chat';
 import { useRecoilState, useSetRecoilState, useRecoilValue } from 'recoil'
 
 const App = props => {
-	const [userInfo, setUserInfo] = useRecoilState(userState);
+    const [userInfo, setUserInfo] = useRecoilState(userState);
     const roomNo = useRecoilValue(roomState);
 
-	const fetchUserAuth = async (token) => {
-		try {
-			const fetchData = await User.check(token)
+    const fetchUserAuth = async (token) => {
+        try {
+            const fetchData = await User.check(token)
 
-			if (fetchData.status !== 200) {
+            if (fetchData.status !== 200) {
                 setUserInfo({
-					isLogin: false,
-					user: {
-						no: '',
-						id: '',
-						name: ''
-					}
-				})
+                    isLogin: false,
+                    user: {
+                        no: '',
+                        id: '',
+                        name: ''
+                    }
+                })
                 throw new Error();
             }
             setUserInfo({
                 isLogin: true,
                 user: fetchData.data
             })
-		} catch(error) {}
-	}
+        } catch(error) {}
+    }
 
-	useEffect(async () => {
-		const fetchData = await fetchUserAuth()
-	}, [])
+    useEffect(async () => {
+        const fetchData = await fetchUserAuth()
+    }, [])
 
-	return (
-		<div>
-			<Header />
-			{ userInfo.isLogin && (
-			<WebSocketProvider>
-                <Alarm />
-				<Room />
-                {roomNo !== 0 && (
-				<Chats />
-                )}
-				<TextInputBox />
-                <RoomUser />
-			</WebSocketProvider>
-			) }
-		</div>
-	)
+    return (
+        <div className="flex justify-center">
+            <div className="lg:w-1/2 w-full">
+            <Header />
+                { userInfo.isLogin && (
+                <WebSocketProvider>
+                    <Alarm />
+                    <Room />
+                    {roomNo !== 0 && (
+                    <Chats />
+                    )}
+                    <TextInputBox />
+                    <RoomUser />
+                </WebSocketProvider>
+                ) }
+            </div>
+        </div>
+    )
 }
 
 export default App
