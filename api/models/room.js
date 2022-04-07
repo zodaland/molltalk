@@ -4,7 +4,7 @@ exports.create = async (userNo, roomName) => {
     try {
         const { insertId } = await db.execute(
             "INSERT INTO room (reg_date, name) VALUES (DATE_FORMAT(NOW(), '%Y%m%d%H%i%s'), ?)",
-            body.name
+            roomName
         );
         
         await db.execute(
@@ -13,6 +13,7 @@ exports.create = async (userNo, roomName) => {
         );
         return ({ status: 201 });
     } catch (error) {
+        console.log(error);
         throw new Error();
     }
 };
@@ -37,7 +38,6 @@ exports.findNameByNo = async (roomNo) => {
         );
         return { status: 200, data };
     } catch(error) {
-        console.log(error);
         throw new Error();
     }
 }
