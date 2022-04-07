@@ -1,15 +1,17 @@
-import React, { useState, useEffect, useRef, useContext } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { WebSocketContext } from '../library/WebSocketProvider'
-import { chatState, itemState } from '../modules/chat'
 
-import { roomState } from '../modules/room';
+import { joinedWsMsgState, sentWsMsgState } from '../modules/wsMsg';
+import { chatsState, roomState } from '../modules/chat';
 import { userState } from '../modules/user';
 import { useRecoilState, useRecoilValue } from 'recoil'
 
 const Chats = () => {
-	const [items, setItems] = useRecoilState(chatState)
+    const joinedWsMsg = useRecoilValue(joinedWsMsgState);
+    const sentWsMsg = useRecoilValue(sentWsMsgState);
+
+	const [chats, setChats] = useRecoilState(chatsState)
     const { user } = useRecoilValue(userState);
-    const item = useRecoilValue(itemState);
 	//dom 접근 ref 사용
 	let boxRef = useRef(null)
 
@@ -20,34 +22,21 @@ const Chats = () => {
 		overflowY: 'scroll'
 	}
 
-	//item이 바뀔때마다 호출
-	useEffect(() => {
-        switch(item.type) {
-            case 'JOIN':
-                setItems(item.data.chats);
-                break;
-            case 'SEND':
-                setItems([...items, item.data]);
-                break;
-            default:
-                break
-        }
-	}, [item])
+    useEffect(() => {
+        if (!joinedWsMsg) return;
+        setChats(joinedWsMsg.chats);
+    }, [joinedWsMsg]);
+    useEffect(() => {
+        if (!sentWsMsg) return;
+        setChats([...chats, sentWsMsg]);
+    }, [sentWsMsg]);
+
 	//채팅이 갱신될때마다 스크롤을 하단으로 내린다.
 	useEffect(() => {
 		if (boxRef.current) {
 			boxRef.current.scrollTop = boxRef.current.scrollHeight
 		}
-	}, [items])
-    
-    const ws = useContext(WebSocketContext);
-    const roomNo = useRecoilValue(roomState);
-    useEffect(() => {
-        if (roomNo === 0) return;
-        if (!ws.current || ws.current.readyState !== WebSocket.OPEN) return;
-        const data = { type: 'JOIN', no: roomNo };
-		ws.current.send(JSON.stringify(data));
-    }, [roomNo])
+	}, [chats])
 
 	return (
 		<div 
@@ -56,7 +45,7 @@ const Chats = () => {
 		>
 			<ul>
 				{
-					items.map((item) => {
+					chats.map((item) => {
 						let chatStyle = { listStyle: 'none' }
 						let message = ''
 

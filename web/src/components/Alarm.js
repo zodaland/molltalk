@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 
-import { itemState } from '../modules/chat';
+import { invitedWsMsgState } from '../modules/wsMsg';
 import { userState } from '../modules/user';
-import { roomsState } from '../modules/room';
+import { roomInfoState } from '../modules/room';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 
 import * as Invitation from '../services/Invitation';
@@ -11,9 +11,9 @@ import * as Room from '../services/Room';
 
 const Alarm = () => {
     const [alarms, setAlarms] = useState([]);
-    const item = useRecoilValue(itemState);
+    const invitedWsMsg = useRecoilValue(invitedWsMsgState);
     const { user } = useRecoilValue(userState);
-    const setRooms = useSetRecoilState(roomsState);
+    const setRooms = useSetRecoilState(roomInfoState);
     
     const handleJoin = async (no) => {
         try {
@@ -31,15 +31,13 @@ const Alarm = () => {
     };
 
     useEffect(() => {
-        if (item.type === 'INVITE') {
-            setAlarms([...alarms, item.data]);
-        }
-    }, [item]);
+        if (!invitedWsMsg) return;
+        setAlarms([...alarms, invitedWsMsg]);
+    }, [invitedWsMsg]);
 
     useEffect(() => {
         const getAlarm = async () => {
             try {
-                console.log(user);
                 const res = await Invitation.getMyInvitation(user.no);
                 if (res.status !== 200) throw new Error();
                 const { data } = res;

@@ -5,7 +5,7 @@ import * as Room from '../services/Room';
 import * as Invitation from '../services/Invitation';
 
 import { userState } from '../modules/user';
-import { roomState } from '../modules/room';
+import { roomState } from '../modules/chat';
 import { useRecoilValue } from 'recoil';
 
 import { WebSocketContext } from '../library/WebSocketProvider'

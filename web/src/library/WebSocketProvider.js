@@ -1,20 +1,24 @@
-import React, { useRef, useEffect } from 'react'
+import { useRef, useEffect, createContext } from 'react';
 
-const WebSocketContext = React.createContext(null)
-export { WebSocketContext }
+import { wsMsgState } from '../modules/wsMsg';
+import { useSetRecoilState } from 'recoil';
+
+const WebSocketContext = createContext(null);
+export { WebSocketContext };
 
 export default (props) => {
-	const ws = useRef(null)
+    const setWsMsgState = useSetRecoilState(wsMsgState);
+	const ws = useRef(null);
 
 	//websocket start
 	const webSocketInit = () => {
-		const webSocketUrl = `wss://api.zodaland.com`
+		const webSocketUrl = `wss://api.zodaland.com`;
 
-			ws.current = new WebSocket(webSocketUrl)
+			ws.current = new WebSocket(webSocketUrl);
 			ws.current.onopen = () => heartbeat();
 			ws.current.onmessage = (evt) => {
-				const data = JSON.parse(evt.data)
-				props.onMessage(data)
+				const data = JSON.parse(evt.data);
+                setWsMsgState(data);
 			}
 			ws.current.onclose = error => checkConnection();
 			ws.current.onerror = error => checkConnection();
@@ -23,12 +27,12 @@ export default (props) => {
 	//websocket restart
 	const checkConnection = () => {
 		if (!ws.current || ws.current.readyState === WebSocket.CLOSED) {
-			webSocketInit()
+			webSocketInit();
             setTimeout(checkConnection, 500);
 		}
-	}
+	};
     const heartbeat = () => {
-        if (ws.current || ws.current.readyState === WebSocket.OPEN) {
+        if (ws.current && ws.current.readyState === WebSocket.OPEN) {
             ws.current.send(JSON.stringify({ type: 'HEART' }));
             setTimeout(heartbeat, 500);
         }
@@ -37,11 +41,11 @@ export default (props) => {
 	//Component Did Mount
 	useEffect(() => {
         checkConnection();
-	}, [])
+	}, []);
 
 	return (
 		<WebSocketContext.Provider value={ws}>
 			{props.children}
 		</WebSocketContext.Provider>
-	)
+	);
 }

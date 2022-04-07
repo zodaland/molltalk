@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react'
 import { WebSocketContext } from '../library/WebSocketProvider'
-import { roomState } from '../modules/room';
+import { roomState } from '../modules/chat';
 import { userState } from '../modules/user';
 import { useRecoilValue } from 'recoil';
 

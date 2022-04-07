@@ -1,13 +1,16 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import * as RoomAxios from '../services/Room';
 import * as RoomUser from '../services/RoomUser';
 import Invitation from './Invitation';
 
-import { roomState, roomsState } from '../modules/room';
+import { roomState } from '../modules/chat';
+import { roomInfoState } from '../modules/room';
 import { useRecoilState } from 'recoil';
 
+import { WebSocketContext } from '../library/WebSocketProvider'
+
 const Room = () => {
-    const [rooms, setRooms] = useRecoilState(roomsState);
+    const [roomInfo, setRoomInfo] = useRecoilState(roomInfoState);
     const [name, setName] = useState('');
     const [roomNo, setRoomNo] = useRecoilState(roomState);
     const handleDelete = async (no) => {
@@ -15,7 +18,7 @@ const Room = () => {
             const res = await RoomUser.deleteRoomUser(no);
             if (res.status !== 200) throw new Error();
             setRoomNo(0);
-            setRooms(rooms.filter(data => data.no !== no));
+            setRoomInfo(roomInfo.filter(data => data.no !== no));
         } catch (error) {
             alert('제거 실패');
         }
@@ -30,7 +33,7 @@ const Room = () => {
         }
         try {
             const res = await RoomAxios.create({ name });
-            if (res.status !== 200) throw new Error();
+            if (res.status !== 201) throw new Error();
 
             getRooms();
         } catch (error) {
@@ -41,7 +44,7 @@ const Room = () => {
         try {
             const res = await RoomAxios.find();
             if (res.status !== 200) throw new Error();
-            setRooms(res.data);
+            setRoomInfo(res.data);
         } catch (error) { }
     };
     
@@ -49,10 +52,18 @@ const Room = () => {
       getRooms();
     }, []); 
 
+    const ws = useContext(WebSocketContext);
+    useEffect(() => {
+        if (roomNo === 0) return;
+        if (!ws.current || ws.current.readyState !== WebSocket.OPEN) return;
+        const data = { type: 'JOIN', no: roomNo };
+		ws.current.send(JSON.stringify(data));
+    }, [roomNo])
+
     return (
         <div>
             <div>
-                {rooms.map(data => (
+                {roomInfo.map(data => (
                 <>
                 <div>
                     <button onClick={() =>handleSelect(data.no)} key={data.no}>{data.name}</button>

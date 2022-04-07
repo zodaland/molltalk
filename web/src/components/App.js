@@ -5,19 +5,18 @@ import Room from './Room'
 import Invitation from './Invitation'
 import Chats from './Chats'
 import Alarm from './Alarm';
+import RoomUser from './RoomUser';
 
 import TextInputBox from './TextInputBox'
 import WebSocketProvider from '../library/WebSocketProvider'
 import * as User from '../services/User'
 
-import { chatState, itemState } from '../modules/chat'
 import { userState } from '../modules/user'
-import { roomState } from '../modules/room';
+import { roomState } from '../modules/chat';
 import { useRecoilState, useSetRecoilState, useRecoilValue } from 'recoil'
 
 const App = props => {
 	const [userInfo, setUserInfo] = useRecoilState(userState);
-	const setItem = useSetRecoilState(itemState);
     const roomNo = useRecoilValue(roomState);
 
 	const fetchUserAuth = async (token) => {
@@ -42,10 +41,6 @@ const App = props => {
 		} catch(error) {}
 	}
 
-	const handleMessageUpdate = (data) => {
-		setItem(data)
-	}
-
 	useEffect(async () => {
 		const fetchData = await fetchUserAuth()
 	}, [])
@@ -54,13 +49,14 @@ const App = props => {
 		<div>
 			<Header />
 			{ userInfo.isLogin && (
-			<WebSocketProvider onMessage={handleMessageUpdate}>
+			<WebSocketProvider>
                 <Alarm />
 				<Room />
                 {roomNo !== 0 && (
 				<Chats />
                 )}
 				<TextInputBox />
+                <RoomUser />
 			</WebSocketProvider>
 			) }
 		</div>
