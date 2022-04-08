@@ -5,18 +5,17 @@ import Room from './Room'
 import Invitation from './Invitation'
 import Chats from './Chats'
 import Alarm from './Alarm';
-import RoomUser from './RoomUser';
 
-import TextInputBox from './TextInputBox'
 import WebSocketProvider from '../library/WebSocketProvider'
 import * as User from '../services/User'
 
 import { userState } from '../modules/user'
 import { roomState } from '../modules/chat';
-import { useRecoilState, useSetRecoilState, useRecoilValue } from 'recoil'
+import { useSetRecoilState, useRecoilValue } from 'recoil'
 
 const App = props => {
-    const [userInfo, setUserInfo] = useRecoilState(userState);
+    const setUserInfo = useSetRecoilState(userState);
+    const { isLogin } = useRecoilValue(userState);
     const roomNo = useRecoilValue(roomState);
 
     const fetchUserAuth = async (token) => {
@@ -46,22 +45,21 @@ const App = props => {
     }, [])
 
     return (
-        <div className="flex justify-center">
-            <div className="lg:w-1/2 w-full">
-            <Header />
-                { userInfo.isLogin && (
-                <WebSocketProvider>
-                    <Alarm />
-                    <Room />
-                    {roomNo !== 0 && (
-                    <Chats />
+        <WebSocketProvider>
+            <div className="flex justify-center h-screen">
+                <div className="lg:w-1/2 w-full">
+                    <Header />
+                    {isLogin && (
+                        <Alarm />
                     )}
-                    <TextInputBox />
-                    <RoomUser />
-                </WebSocketProvider>
-                ) }
+                    {isLogin && (roomNo !== 0 ? (
+                        <Chats /> 
+                    ) : (
+                        <Room />
+                    ))}
+                </div>
             </div>
-        </div>
+        </WebSocketProvider>
     )
 }
 
