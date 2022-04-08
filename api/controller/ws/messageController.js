@@ -54,6 +54,7 @@ exports.send = async (wss, ws, message) => {
             data: {
                 content: message.content,
                 name: ws.decoded.name,
+                id: ws.decoded.id,
             }
         };
         wss.clients.forEach(client => {
@@ -74,12 +75,13 @@ exports.invite = async (wss, ws, message) => {
 
     try {
         if (typeof roomNo === 'undefined') throw new Error();
-        const roomRes = await roomModel.findNameByNo(roomNo);
+        const { status, data } = await roomModel.findNameByNo(roomNo);
+        if (!data) throw new Error();
         const result = {
             type,
             data: {
                 no: roomNo,
-                name: roomRes.name,
+                name: data.name,
                 id,
             },
         };
@@ -95,11 +97,67 @@ exports.invite = async (wss, ws, message) => {
     }
 };
 
-exports.close = (wss, ws) => {
+exports.exit = (wss, ws) => {
     if (!ws.room) return;
     wss.clients.forEach(client => {
+        console.log(client.decoded);
         if (ws.decoded.no === client.decoded.no) return;
-        if (ws.room !== client.room) return;
+        if (!client.room || ws.room !== client.room) return;
+        console.log(client.room);
         client._send({ type: 'EXIT', data: { room: ws.room, user: { id: ws.decoded.id, name: ws.decoded.name } } });
     });
+    delete ws.room;
 };
+
+exports.roomEnter = async (wss, ws, message) => {
+    const roomNo = message.no;
+    const { id, name } = ws.decoded;
+
+    try {
+        if (typeof roomNo === 'undefined') throw new Error();
+
+        const chat = {
+            id,
+            name,
+            type: 'ENTER',
+            room: roomNo,
+        };
+        await chatModel.create(chat);
+
+        wss.clients.forEach(client => {
+            const { decoded } = client;
+            if (!decoded) return;
+            if (client.room !== roomNo) return;
+            client._send({ type: 'SEND', data: { type: 'ENTER', id, name } });
+        });
+    } catch (error) {
+        ws._send({ status: 500 });
+    }
+}
+
+exports.roomExit = async (wss, ws, message) => {
+    const roomNo = message.no;
+    const { id, name } = ws.decoded;
+
+    try {
+        if (typeof roomNo === 'undefined') throw new Error();
+
+        const chat = {
+            id,
+            name,
+            type: 'EXIT',
+            room: roomNo,
+        };
+        await chatModel.create(chat);
+
+        wss.clients.forEach(client => {
+            const { decoded } = client;
+            if (!decoded) return;
+            if (client.room !== roomNo) return;
+            client._send({ type: 'SEND', data: { type: 'EXIT', id, name } });
+        });
+    } catch (error) {
+        console.log(error);
+        ws._send({ status: 500 });
+    }
+}

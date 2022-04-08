@@ -52,11 +52,20 @@ module.exports = async (wss) => {
                 case 'INVITE':
                     messageController.invite(wss, ws, data);
                     break;
+                case 'EXIT':
+                    messageController.exit(wss, ws);
+                    break;
+                case 'ROOMENTER':
+                    messageController.roomEnter(wss, ws, data);
+                    break;
+                case 'ROOMEXIT':
+                    messageController.roomExit(wss, ws, data);
+                    break;
                 case 'HEART':
                     break;
                 default:
             }
         });
-        ws.on('close', () => messageController.close(wss, ws));
+        ws.on('close', () => messageController.exit(wss, ws));
     });
 };
