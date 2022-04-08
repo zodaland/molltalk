@@ -16,11 +16,11 @@ const TextInputBox = () => {
 
     const handleClickSubmit = () => {
         if (message.trim() === '' || !wsService) return;
-        
+
         wsService.chat(message);
         setMessage('');
     }
-    
+
     const handleKeyUp = (e) => {
         if (e.keyCode === 13) {
             handleClickSubmit()
