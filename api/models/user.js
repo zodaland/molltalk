@@ -4,12 +4,12 @@ const hash = require('../library/hash');
 exports.findById = async (id) => {
     try {
         const [result] = await db.execute(
-            'SELECT no FROM user WHERE id = ?',
+            'SELECT no, name FROM user WHERE id = ?',
             id
         );
         if (!result) return { status: 400 };
-        const no = result.no;
-        const data = { no, id };
+        const { name, no } = result;
+        const data = { no, id, name };
         
         return { status: 200, data };
     } catch (error) {
