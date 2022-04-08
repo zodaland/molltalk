@@ -1,27 +1,33 @@
-import { useRef, useEffect, createContext } from 'react';
+import { useState, useRef, useEffect, createContext } from 'react';
 
 import { wsMsgState } from '../modules/wsMsg';
-import { useSetRecoilState } from 'recoil';
+import { userState } from '../modules/user';
+import { useSetRecoilState, useRecoilValue } from 'recoil';
+
+import WsService from '../services/Ws';
 
 const WebSocketContext = createContext(null);
 export { WebSocketContext };
 
-export default (props) => {
+const WebSocketProvider = (props) => {
+    const { isLogin } = useRecoilValue(userState);
     const setWsMsgState = useSetRecoilState(wsMsgState);
 	const ws = useRef(null);
+    const [wsService, setWsService] = useState(new WsService(ws.current));
 
 	//websocket start
 	const webSocketInit = () => {
 		const webSocketUrl = `wss://api.zodaland.com`;
 
 			ws.current = new WebSocket(webSocketUrl);
+            setWsService(new WsService(ws.current));
 			ws.current.onopen = () => heartbeat();
 			ws.current.onmessage = (evt) => {
 				const data = JSON.parse(evt.data);
                 setWsMsgState(data);
 			}
-			ws.current.onclose = error => checkConnection();
-			ws.current.onerror = error => checkConnection();
+			ws.current.onclose = error => isLogin && checkConnection();
+			ws.current.onerror = error => isLogin && checkConnection();
 	}
 
 	//websocket restart
@@ -40,12 +46,15 @@ export default (props) => {
 
 	//Component Did Mount
 	useEffect(() => {
+        if (!isLogin) return;
         checkConnection();
-	}, []);
+	}, [isLogin]);
 
 	return (
-		<WebSocketContext.Provider value={ws}>
+		<WebSocketContext.Provider value={wsService}>
 			{props.children}
 		</WebSocketContext.Provider>
 	);
 }
+
+export default WebSocketProvider;
