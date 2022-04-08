@@ -58,13 +58,17 @@ exports.delete = async (roomNo, userNo) => {
             roomNo
         );
         if (typeof roomUserRes === 'undefined') return { status: 200 };
-        //방에 유저가 없으면 방을 제거한다.
+        //방에 유저가 없으면 방과 초대장을 제거한다.
         if (roomUserRes.count < 1) {
             await db.execute(
                 'DELETE FROM room WHERE no = ?',
                 roomNo
             );
-        }            
+            await db.execute(
+                'DELETE FROM invitation WHERE room_no = ?',
+                roomNo
+            );
+        }
         return { status: 200 };
     } catch (error) {
         throw new Error();
