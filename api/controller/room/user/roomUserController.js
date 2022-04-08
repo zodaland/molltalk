@@ -1,5 +1,4 @@
 const roomUserModel = require('../../../models/roomUser');
-const chatModel = require('../../../models/chat');
 
 exports.create = async (req, res) => {
     if (!req.body.no || !req.decoded) {
@@ -11,14 +10,6 @@ exports.create = async (req, res) => {
     const { id, name } = req.decoded;
     
     try {
-        const chat = {
-            id,
-            name,
-            type: 'ENTER',
-            room: roomNo,
-        };
-        await chatModel.create(chat);
-
         const { status } = await roomUserModel.create(roomNo, userNo);
         res.status(status).json();
     } catch (error) {
@@ -51,14 +42,6 @@ exports.delete = async (req, res) => {
     const { id, name } = req.decoded;
     
     try {
-        const chat = {
-            id,
-            name,
-            type: 'EXIT',
-            room: roomNo,
-        };
-        await chatModel.create(chat);
-
         const { status } = await roomUserModel.delete(roomNo, userNo); 
         res.status(status).json();
     } catch (error) {
