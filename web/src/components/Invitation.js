@@ -35,7 +35,7 @@ const UserInvitation = () => {
 
     return (
         <>
-            <div className="flex mx-2 mb-2">
+            <div className="flex mx-2 my-2">
                 <input
                     className="flex-grow border border-black rounded-md p-1 text-sm"
                     name="id"

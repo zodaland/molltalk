@@ -68,7 +68,7 @@ const Alarm = () => {
     return (
         <div className="grid lg:grid-cols-3 grid-cols-2">
         {alarms.map(alarm => (
-            <div className="m-2 border border-gray-500 rounded-md" key={alarm.no}>
+            <div className="mx-2 mt-2 border border-gray-500 rounded-md" key={alarm.no}>
                 <button
                     className="w-4/5 h-12 text-sm rounded-l-md hover:bg-green-200 transition"
                     onClick={() => handleJoin(alarm.no)}
