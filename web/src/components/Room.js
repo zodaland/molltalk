@@ -1,24 +1,26 @@
 import { useState, useEffect, useContext } from 'react'
 import * as RoomAxios from '../services/Room';
 import * as RoomUser from '../services/RoomUser';
-import Invitation from './Invitation';
 
 import { roomState } from '../modules/chat';
 import { roomInfoState } from '../modules/room';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 
-import { WebSocketContext } from '../library/WebSocketProvider'
+import { WebSocketContext } from '../library/WebSocketProvider';
 
 const Room = () => {
     const [roomInfo, setRoomInfo] = useRecoilState(roomInfoState);
     const [name, setName] = useState('');
-    const [roomNo, setRoomNo] = useRecoilState(roomState);
+    const setRoomNo = useSetRecoilState(roomState);
+    const wsService = useContext(WebSocketContext);
     const handleDelete = async (no) => {
         try {
             const res = await RoomUser.deleteRoomUser(no);
             if (res.status !== 200) throw new Error();
-            setRoomNo(0);
             setRoomInfo(roomInfo.filter(data => data.no !== no));
+            if (wsService) {
+                wsService.roomExit(no);
+            }
         } catch (error) {
             alert('제거 실패');
         }
@@ -35,6 +37,7 @@ const Room = () => {
             const res = await RoomAxios.create({ name });
             if (res.status !== 201) throw new Error();
 
+            setName('');
             getRooms();
         } catch (error) {
             alert('방생성 실패');
@@ -52,33 +55,40 @@ const Room = () => {
       getRooms();
     }, []); 
 
-    const ws = useContext(WebSocketContext);
-    useEffect(() => {
-        if (roomNo === 0) return;
-        if (!ws.current || ws.current.readyState !== WebSocket.OPEN) return;
-        const data = { type: 'JOIN', no: roomNo };
-		ws.current.send(JSON.stringify(data));
-    }, [roomNo])
-
     return (
-        <div>
-            <div>
+        <div className="mt-1 px-2">
+            <div className="my-3 border border-gray-500 rounded-md">
+                <input
+                    className="w-4/5 h-14 px-1 text-xl rounded-l-md"
+                    name="name"
+                    onChange={handleChange}
+                />
+                <button
+                    className="float-right w-1/5 h-14 bg-green-200 rounded-r-md hover:bg-green-300 transition"
+                    onClick={handleCreate}
+                >
+                    방생성
+                </button>
+            </div>
+            <div className="flex flex-col">
                 {roomInfo.map(data => (
-                <>
-                <div>
-                    <button onClick={() =>handleSelect(data.no)} key={data.no}>{data.name}</button>
+                <div className="my-3 border border-gray-500 rounded-md" key={data.no}>
+                    <button
+                        className="w-4/5 h-14 px-1 text-xl whitespace-nowrap truncate  rounded-l-md hover:bg-green-200 transition"
+                        onClick={() => handleSelect(data.no)} 
+                    >
+                        {data.name}
+                    </button>
+                    <button
+                        className="float-right w-1/5 h-14 bg-red-200 rounded-r-md hover:bg-red-300 transition"
+                        onClick={() =>handleDelete(data.no)}
+                    >
+                        나가기
+                    </button>
                 </div>
-                <div>
-                    <button onClick={() =>handleDelete(data.no)}>방 제거</button>
-                </div>
-                </>
                 )
                 )}
             </div>
-            <input name="name" onChange={handleChange} />
-            <button onClick={handleCreate}>방생성</button>
-                {roomNo !== 0 && 
-                <Invitation />}
         </div>
     );
 };

@@ -12,43 +12,53 @@ import { WebSocketContext } from '../library/WebSocketProvider'
 
 const UserInvitation = () => {
     const [id, setId] = useState('');
+    const [name, setName] = useState('');
     const [no, setNo] = useState(0);
     const [isFound, setIsFound] = useState(false);
 
     const handleId = (e) => {
         setId(e.target.value);
         setIsFound(false);
+        setName('');
         setNo(0);
     }
 
     const handleFind = async () => {
         try {
             const res = await findById(id);
-            if (res.status !== 200) {
-                throw new Error();
-            }
+            if (res.status !== 200) throw new Error();
             setNo(res.data.no);
+            setName(res.data.name);
             setIsFound(true);
         } catch {};
     };
 
     return (
-        <div>
-            <input
-                name="id"
-                value={id}
-                onChange={handleId}
-            />
-            <button onClick={handleFind}>찾기</button>
-            {isFound && <UserComponent id={id} invitedUserNo={no} />}
-        </div>
+        <>
+            <div className="flex mx-2 mb-2">
+                <input
+                    className="flex-grow border border-black rounded-md p-1 text-sm"
+                    name="id"
+                    value={id}
+                    placeholder="아이디 입력"
+                    onChange={handleId}
+                />
+                <button
+                    className="rounded-md bg-blue-100 py-1 px-6 ml-3 text-sm"
+                    onClick={handleFind}
+                >
+                    찾기
+                </button>
+            </div>
+            {isFound && <UserComponent name={name} invitedUserNo={no} />}
+        </>
     );
 };
 
-const UserComponent = ({ id, invitedUserNo }) => {
+const UserComponent = ({ name, invitedUserNo }) => {
     const { user } = useRecoilValue(userState);
     const roomNo = useRecoilValue(roomState);
-    const ws = useContext(WebSocketContext);
+    const wsService = useContext(WebSocketContext);
     const handleInvite = async () => {
         try {
             const params = {
@@ -68,12 +78,7 @@ const UserComponent = ({ id, invitedUserNo }) => {
             if (inviteRes.status !== 201) throw new Error();
             const roomName = inviteRes.data;
 
-            if (ws.current && ws.current.readyState === WebSocket.OPEN) {
-                ws.current.send(JSON.stringify({
-                    type: 'INVITE',
-                    no: invitedUserNo,
-                }));
-            }
+            if (wsService) wsService.invite(invitedUserNo);
 
             alert('초대 되었습니다.');
         } catch(error) {
@@ -81,9 +86,14 @@ const UserComponent = ({ id, invitedUserNo }) => {
         }
     }
     return (
-        <div>
-            <span>{id}</span>
-            <button onClick={handleInvite}>초대</button>
+        <div className="flex m-2">
+            <span className="rounded-md p-1 text-sm border rounded-md px-6">{name}</span>
+            <button
+                className="rounded-md bg-blue-200 py-1 px-6 ml-3 text-sm"
+                onClick={handleInvite}
+            >
+                초대
+            </button>
         </div>
     );
 };

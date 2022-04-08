@@ -1,8 +1,12 @@
-import { useState } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import * as User from '../services/User'
 
 import { userState } from '../modules/user';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { roomState } from '../modules/chat';
+import { roomInfoState } from '../modules/room';
+import { useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil';
+
+import { WebSocketContext } from '../library/WebSocketProvider'
 
 const Header = () => {
     const { isLogin } = useRecoilValue(userState);
@@ -19,6 +23,9 @@ const Header = () => {
 
 const LogoutComponent = () => {
     const { user } = useRecoilValue(userState);
+    const [roomNo, setRoomNo] = useRecoilState(roomState);
+    const roomInfo = useRecoilValue(roomInfoState);
+    const [roomName, setRoomName] = useState('');
 
     const handleLogout = async () => {
         try {
@@ -30,10 +37,41 @@ const LogoutComponent = () => {
         }
     };
 
+    const handleClick = (e) => setRoomNo(0);
+
+    //채팅방 입장시 방이름 추출
+    useEffect(() => {
+        const room = roomInfo.find(room => room.no === roomNo);
+        if (!room) {
+            setRoomName('');
+        } else {
+            setRoomName(room.name);
+        }
+    }, [roomNo]);
+
+    //채팅방 입/퇴장 처리
+    const wsService = useContext(WebSocketContext);
+    useEffect(() => {
+        if (!wsService) return;
+        if (roomNo === 0) {
+            wsService.exit();
+        } else {
+            wsService.join(roomNo);
+        }
+    }, [roomNo])
+
     return (
-        <div className="flex justify-between border-b border-black">
-            <span className="m-6 text-2xl">{user.name}</span>
-            <button className="m-4 p-2 text-xl border-2 border-black rounded-md hover:bg-gray-200 transition" onClick={handleLogout}>로그아웃</button>
+        <div className="grid grid-cols-3 border-b border-gray-500">
+            <span className="h-12 m-4 p-2 text-xl text-center border rounded-md whitespace-nowrap truncate">{user.name}</span>
+            { roomName && (
+                <button
+                    className="h-12 m-4 py-2 px-5 text-xl text-center border rounded-md whitespace-nowrap truncate hover:bg-red-200 transition"
+                    onClick={handleClick}
+                >
+                    {roomName}
+                </button>
+            )}
+            <button className="col-start-3 h-12 m-4 p-2 text-xl border rounded-md hover:bg-gray-200 transition" onClick={handleLogout}>로그아웃</button>
         </div>
     );
 };
@@ -97,12 +135,7 @@ const LoginComponent = ({ handleToggle }) => {
         }
     };
     return (
-        <div>
-            <button
-                className="w-full border-2 border-gray-500 rounded-md text-2xl p-2 bg-gray-100 hover:bg-gray-200 transition mb-12"
-                onClick={handleToggle}>
-                    회원가입
-            </button>
+        <div className="border border-gray-500 rounded-md p-3">
             <form className="space-y-2" onSubmit={handleLogin}>
                 <input
                     className="w-full border text-xl p-2"
@@ -125,6 +158,11 @@ const LoginComponent = ({ handleToggle }) => {
                     로그인
                 </button>
             </form>
+            <button
+                className="w-full border-2 border-gray-500 rounded-md text-2xl p-2 bg-gray-100 hover:bg-gray-200 transition mt-12"
+                onClick={handleToggle}>
+                    회원가입
+            </button>
         </div>
     );
 };
@@ -168,13 +206,7 @@ const RegisterComponent = ({ handleToggle }) => {
     };
 
     return (
-        <div>
-            <button
-                className="w-full border-2 border-gray-500 rounded-md text-2xl p-2 bg-gray-100 hover:bg-gray-200 transition mb-12"
-                onClick={handleToggle}
-            >
-                로그인
-            </button>
+        <div className="border border-gray-500 rounded-md p-3">
             <form className="space-y-2" onSubmit={handleRegister}>
                 <input
                     className="w-full border text-xl p-2"
@@ -205,6 +237,12 @@ const RegisterComponent = ({ handleToggle }) => {
                     등록
                 </button>
             </form>
+            <button
+                className="w-full border-2 border-gray-500 rounded-md text-2xl p-2 bg-gray-100 hover:bg-gray-200 transition mt-12"
+                onClick={handleToggle}
+            >
+                로그인
+            </button>
         </div>
     );
 };

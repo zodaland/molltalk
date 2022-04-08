@@ -19,6 +19,7 @@ const RoomUser = () => {
 
     useEffect(() => {
         if (!exitedWsMsg) return;
+        console.log(exitedWsMsg);
         setUsers(users.filter(user => user.id !== exitedWsMsg.user.id));
     }, [exitedWsMsg]);
 
@@ -32,9 +33,9 @@ const RoomUser = () => {
     }, [room]);
 
     return (
-        <div>
+        <div className="grid lg:grid-cols-4 grid-cols-2 mb-2">
             {users.length > 0 && users.map((user) => (
-            <div>{user.name}</div>
+                <div className="rounded-2xl bg-blue-200 text-center p-2 mx-2">{user.name}</div>
             ))}
         </div>
     );
