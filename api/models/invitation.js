@@ -18,8 +18,8 @@ exports.create = async (roomNo, inviteUserNo, invitedUserNo) => {
         if (userRes.count < 1) return { status: 400 };
         //이미 초대된 유저인지 확인한다.
         const [alreadyInviteRes] = await db.execute(
-            'SELECT count(no) as count FROM invitation WHERE invite_user_no = ? AND invited_user_no = ?',
-            [inviteUserNo, invitedUserNo]
+            'SELECT count(no) as count FROM invitation WHERE invite_user_no = ? AND invited_user_no = ? AND room_no = ?',
+            [inviteUserNo, invitedUserNo, roomNo]
         );
         if (typeof alreadyInviteRes === 'undefined') throw new Error();
         if (alreadyInviteRes.count > 0) return { status: 202 };

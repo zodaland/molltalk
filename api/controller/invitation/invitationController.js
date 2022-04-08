@@ -38,11 +38,11 @@ exports.findsByInvitedUser = async (req, res) => {
 };
 //유저 넘버와 방넘버를 받아서 삭제한다. 방 참여 거절용
 exports.delete = async (req, res) => {
-    if (!req.body.no || !req.decoded || !req.decoded.no) {
+    if (!req.params.no || !req.decoded || !req.decoded.no) {
         res.status(400).json();
         return;
     }
-    const roomNo = req.body.no;
+    const roomNo = req.params.no;
     const userNo = req.decoded.no;
     
     try {
