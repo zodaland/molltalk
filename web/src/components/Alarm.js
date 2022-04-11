@@ -45,8 +45,8 @@ const Alarm = () => {
 
     useEffect(() => {
         if (!invitedWsMsg) return;
-        setAlarms([...alarms, invitedWsMsg]);
-    }, [invitedWsMsg, alarms]);
+        setAlarms(alarms => alarms.concat(invitedWsMsg));
+    }, [invitedWsMsg]);
 
     useEffect(() => {
         const getAlarm = async () => {

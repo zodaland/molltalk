@@ -14,14 +14,13 @@ const RoomUser = () => {
 
     useEffect(() => {
         if (!enteredWsMsg) return;
-        setUsers([...users, enteredWsMsg.user]);
-    }, [enteredWsMsg, users]);
+        setUsers(users => users.concat(enteredWsMsg.user));
+    }, [enteredWsMsg]);
 
     useEffect(() => {
         if (!exitedWsMsg) return;
-        console.log(exitedWsMsg);
-        setUsers(users.filter(user => user.id !== exitedWsMsg.user.id));
-    }, [exitedWsMsg, users]);
+        setUsers(users => users.filter(user => user.id !== exitedWsMsg.user.id));
+    }, [exitedWsMsg]);
 
     useEffect(() => {
         if (!joinedWsMsg) return;

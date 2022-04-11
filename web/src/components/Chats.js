@@ -21,8 +21,8 @@ const Chats = () => {
     }, [joinedWsMsg, setChats]);
     useEffect(() => {
         if (!sentWsMsg) return;
-        setChats([...chats, sentWsMsg]);
-    }, [sentWsMsg, chats, setChats]);
+        setChats(chats => chats.concat(sentWsMsg));
+    }, [sentWsMsg, setChats]);
 
 	return (
 		<div
