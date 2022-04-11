@@ -25,7 +25,7 @@ wsController(webSocketServer);
 
 //cors
 app.use(cors({
-    origin: 'https://mt.zodaland.com',
+    origin: ['https://mt.zodaland.com', 'https://mt.test.zodaland.com'],
     credentials: true,
 }));
 //바디 파싱
