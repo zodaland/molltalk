@@ -12,6 +12,8 @@ api/npm-debug.log*
 api/yarn-debug.log*
 api/yarn-error.log*
 api/Dockerfile
+api/coverage
+api/test
 
 docker-compose.yml
 .gitignore
