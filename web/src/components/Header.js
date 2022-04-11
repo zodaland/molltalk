@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from 'react'
-import * as user from '../services/user'
+import { login, logout, regist } from '../services/user'
 
 import { userState } from '../modules/user';
 import { roomState } from '../modules/chat';
@@ -29,10 +29,11 @@ const LogoutComponent = () => {
 
     const handleLogout = async () => {
         try {
-            const fetchData = await user.logout()
+            const fetchData = await logout()
             if (fetchData.status !== 200) throw new Error();
             window.location.reload();
         } catch (error) {
+            console.log(error);
             alert('로그아웃 실패');
         }
     };
@@ -116,7 +117,7 @@ const LoginComponent = ({ handleToggle }) => {
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            const fetchData = await user.login(loginInfo);
+            const fetchData = await login(loginInfo);
             if (fetchData.status !== 200) {
                 alert('로그인 실패');
                 return;
@@ -188,7 +189,7 @@ const RegisterComponent = ({ handleToggle }) => {
         e.preventDefault();
 
         try {
-            const fetchData = await user.regist(registerInfo);
+            const fetchData = await regist(registerInfo);
             if (fetchData.status !== 201) {
                 throw new Error();
             }
