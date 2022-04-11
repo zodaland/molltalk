@@ -1,29 +1,28 @@
-import { useState, useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 
 import Invitation from './Invitation';
 import TextInputBox from './TextInputBox';
 import RoomUser from './RoomUser';
 
 import { joinedWsMsgState, sentWsMsgState } from '../modules/wsMsg';
-import { chatsState, roomState } from '../modules/chat';
+import { chatsState } from '../modules/chat';
 import { userState } from '../modules/user';
 import { useRecoilState, useRecoilValue } from 'recoil'
 
 const Chats = () => {
     const joinedWsMsg = useRecoilValue(joinedWsMsgState);
     const sentWsMsg = useRecoilValue(sentWsMsgState);
-    const roomNo = useRecoilValue(roomState);
 
 	const [chats, setChats] = useRecoilState(chatsState);
 
     useEffect(() => {
         if (!joinedWsMsg) return;
         setChats(joinedWsMsg.chats);
-    }, [joinedWsMsg]);
+    }, [joinedWsMsg, setChats]);
     useEffect(() => {
         if (!sentWsMsg) return;
         setChats([...chats, sentWsMsg]);
-    }, [sentWsMsg]);
+    }, [sentWsMsg, chats, setChats]);
 
 	return (
 		<div
@@ -51,9 +50,10 @@ const ChatBoxComponent = ({ chats }) => {
             ref={boxRef}
         >
             {
-                chats.map((item) => {
-                    if (item.content) return (<ChatComponent item={item} />);
-                    if (item.type) return (<StatusChatComponent item={item} />);
+                chats.map((item, key) => {
+                    if (item.content) return (<ChatComponent item={item} key={key} />);
+                    if (item.type) return (<StatusChatComponent item={item} key={key} />);
+                    return null;
                 })
             }
         </ul>

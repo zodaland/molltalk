@@ -15,13 +15,13 @@ const RoomUser = () => {
     useEffect(() => {
         if (!enteredWsMsg) return;
         setUsers([...users, enteredWsMsg.user]);
-    }, [enteredWsMsg]);
+    }, [enteredWsMsg, users]);
 
     useEffect(() => {
         if (!exitedWsMsg) return;
         console.log(exitedWsMsg);
         setUsers(users.filter(user => user.id !== exitedWsMsg.user.id));
-    }, [exitedWsMsg]);
+    }, [exitedWsMsg, users]);
 
     useEffect(() => {
         if (!joinedWsMsg) return;
@@ -34,8 +34,8 @@ const RoomUser = () => {
 
     return (
         <div className="grid lg:grid-cols-4 grid-cols-2 mb-2">
-            {users.length > 0 && users.map((user) => (
-                <div className="rounded-2xl bg-blue-200 text-center p-2 mx-2">{user.name}</div>
+            {users.length > 0 && users.map((user, key) => (
+                <div className="rounded-2xl bg-blue-200 text-center p-2 mx-2" key={key}>{user.name}</div>
             ))}
         </div>
     );

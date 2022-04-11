@@ -1,13 +1,8 @@
 import React, { useState, useContext } from 'react'
 import { WebSocketContext } from '../library/WebSocketProvider';
-import { roomState } from '../modules/chat';
-import { userState } from '../modules/user';
-import { useRecoilValue } from 'recoil';
 
 const TextInputBox = () => {
     const [message, setMessage] = useState('')
-    const { user } = useRecoilValue(userState);
-    const roomNo = useRecoilValue(roomState);
     const wsService = useContext(WebSocketContext)
 
     const handleChangeText = (e) => {

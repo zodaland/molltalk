@@ -1,6 +1,6 @@
-import { useState, useEffect, useContext } from 'react'
-import * as RoomAxios from '../services/Room';
-import * as RoomUser from '../services/RoomUser';
+import { useState, useEffect, useContext, useCallback } from 'react'
+import * as room from '../services/room';
+import * as roomUser from '../services/roomUser';
 
 import { roomState } from '../modules/chat';
 import { roomInfoState } from '../modules/room';
@@ -15,7 +15,7 @@ const Room = () => {
     const wsService = useContext(WebSocketContext);
     const handleDelete = async (no) => {
         try {
-            const res = await RoomUser.deleteRoomUser(no);
+            const res = await roomUser.deleteRoomUser(no);
             if (res.status !== 200) throw new Error();
             setRoomInfo(roomInfo.filter(data => data.no !== no));
             if (wsService) {
@@ -34,7 +34,7 @@ const Room = () => {
             return;
         }
         try {
-            const res = await RoomAxios.create({ name });
+            const res = await room.create({ name });
             if (res.status !== 201) throw new Error();
 
             setName('');
@@ -43,17 +43,17 @@ const Room = () => {
             alert('방생성 실패');
         }
     };
-    const getRooms = async () => {
+    const getRooms = useCallback(async () => {
         try {
-            const res = await RoomAxios.find();
+            const res = await room.find();
             if (res.status !== 200) throw new Error();
             setRoomInfo(res.data);
         } catch (error) { }
-    };
+    }, [setRoomInfo]);
     
     useEffect(() => {
       getRooms();
-    }, []); 
+    }, [getRooms]); 
 
     return (
         <div className="mt-1 px-2">

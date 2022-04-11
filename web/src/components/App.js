@@ -1,48 +1,48 @@
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react';
 
-import Header from './Header'
-import Room from './Room'
-import Invitation from './Invitation'
-import Chats from './Chats'
+import Header from './Header';
+import Room from './Room';
+import Chats from './Chats';
 import Alarm from './Alarm';
 
-import WebSocketProvider from '../library/WebSocketProvider'
-import * as User from '../services/User'
+import WebSocketProvider from '../library/WebSocketProvider';
 
-import { userState } from '../modules/user'
+import * as user from '../services/user';
+
+import { userState } from '../modules/user';
 import { roomState } from '../modules/chat';
-import { useSetRecoilState, useRecoilValue } from 'recoil'
+import { useSetRecoilState, useRecoilValue } from 'recoil';
 
 const App = props => {
     const setUserInfo = useSetRecoilState(userState);
     const { isLogin } = useRecoilValue(userState);
     const roomNo = useRecoilValue(roomState);
 
-    const fetchUserAuth = async (token) => {
-        try {
-            const fetchData = await User.check(token)
+    useEffect(() => {
+        const fetchUserAuth = async (token) => {
+            try {
+                const fetchData = await user.check(token);
 
-            if (fetchData.status !== 200) {
+                if (fetchData.status !== 200) {
+                    setUserInfo({
+                        isLogin: false,
+                        user: {
+                            no: '',
+                            id: '',
+                            name: ''
+                        }
+                    });
+                    throw new Error();
+                }
                 setUserInfo({
-                    isLogin: false,
-                    user: {
-                        no: '',
-                        id: '',
-                        name: ''
-                    }
-                })
-                throw new Error();
-            }
-            setUserInfo({
-                isLogin: true,
-                user: fetchData.data
-            })
-        } catch(error) {}
-    }
+                    isLogin: true,
+                    user: fetchData.data
+                });
+            } catch(error) {}
+        };
 
-    useEffect(async () => {
-        const fetchData = await fetchUserAuth()
-    }, [])
+        fetchUserAuth();
+    }, [setUserInfo]);
 
     return (
         <WebSocketProvider>
@@ -63,4 +63,4 @@ const App = props => {
     )
 }
 
-export default App
+export default App;

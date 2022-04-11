@@ -1,16 +1,14 @@
-import { useState, useEffect, useContext } from 'react'
+import { useState, useContext } from 'react'
 
-import { findById } from '../services/User';
-import * as Room from '../services/Room';
-import * as Invitation from '../services/Invitation';
+import * as user from '../services/user';
+import * as invitation from '../services/invitation';
 
-import { userState } from '../modules/user';
 import { roomState } from '../modules/chat';
 import { useRecoilValue } from 'recoil';
 
 import { WebSocketContext } from '../library/WebSocketProvider'
 
-const UserInvitation = () => {
+const Invitation = () => {
     const [id, setId] = useState('');
     const [name, setName] = useState('');
     const [no, setNo] = useState(0);
@@ -25,7 +23,7 @@ const UserInvitation = () => {
 
     const handleFind = async () => {
         try {
-            const res = await findById(id);
+            const res = await user.findById(id);
             if (res.status !== 200) throw new Error();
             setNo(res.data.no);
             setName(res.data.name);
@@ -56,7 +54,6 @@ const UserInvitation = () => {
 };
 
 const UserComponent = ({ name, invitedUserNo }) => {
-    const { user } = useRecoilValue(userState);
     const roomNo = useRecoilValue(roomState);
     const wsService = useContext(WebSocketContext);
     const handleInvite = async () => {
@@ -65,7 +62,7 @@ const UserComponent = ({ name, invitedUserNo }) => {
                 roomNo,
                 invitedUserNo
             };
-            const inviteRes = await Invitation.create(params);
+            const inviteRes = await invitation.create(params);
             
             if (inviteRes.status === 202) {
                 alert('이미 초대되었습니다');
@@ -76,8 +73,6 @@ const UserComponent = ({ name, invitedUserNo }) => {
                 return;
             }
             if (inviteRes.status !== 201) throw new Error();
-            const roomName = inviteRes.data;
-
             if (wsService) wsService.invite(invitedUserNo);
 
             alert('초대 되었습니다.');
@@ -98,4 +93,4 @@ const UserComponent = ({ name, invitedUserNo }) => {
     );
 };
 
-export default UserInvitation;
+export default Invitation;

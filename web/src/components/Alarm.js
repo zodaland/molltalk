@@ -5,9 +5,9 @@ import { userState } from '../modules/user';
 import { roomInfoState } from '../modules/room';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 
-import * as Invitation from '../services/Invitation';
-import * as RoomUser from '../services/RoomUser';
-import * as Room from '../services/Room';
+import * as invitation from '../services/invitation';
+import * as roomUser from '../services/roomUser';
+import * as room from '../services/room';
 
 import { WebSocketContext } from '../library/WebSocketProvider';
 
@@ -20,10 +20,10 @@ const Alarm = () => {
     
     const handleJoin = async (no) => {
         try {
-            const joinRes = await RoomUser.create({ no });
+            const joinRes = await roomUser.create({ no });
             if (joinRes.status !== 201) throw new Error();
 
-            const res = await Room.find();
+            const res = await room.find();
             if (res.status !== 200) throw new Error();
             setRooms(res.data);
             setAlarms(alarms.filter(alarm => alarm.no!== no));
@@ -35,7 +35,7 @@ const Alarm = () => {
     };
     const handleDelete = async (no) => {
         try {
-            const delRes = await Invitation.del(no);
+            const delRes = await invitation.del(no);
             if (delRes.status !== 200) throw new Error();
             setAlarms(alarms.filter(alarm => alarm.no !== no));
         } catch (error) {
@@ -46,12 +46,12 @@ const Alarm = () => {
     useEffect(() => {
         if (!invitedWsMsg) return;
         setAlarms([...alarms, invitedWsMsg]);
-    }, [invitedWsMsg]);
+    }, [invitedWsMsg, alarms]);
 
     useEffect(() => {
         const getAlarm = async () => {
             try {
-                const res = await Invitation.getMyInvitation(user.no);
+                const res = await invitation.getMyInvitation(user.no);
                 if (res.status !== 200) throw new Error();
                 const { data } = res;
                 const myAlarms = data.map((myAlarm) => ({
@@ -63,7 +63,7 @@ const Alarm = () => {
             } catch (error) {}
         };
         getAlarm();
-    }, []);
+    }, [user]);
 
     return (
         <div className="grid lg:grid-cols-3 grid-cols-2">

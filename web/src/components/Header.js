@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from 'react'
-import * as User from '../services/User'
+import * as user from '../services/user'
 
 import { userState } from '../modules/user';
 import { roomState } from '../modules/chat';
@@ -29,7 +29,7 @@ const LogoutComponent = () => {
 
     const handleLogout = async () => {
         try {
-            const fetchData = await User.logout()
+            const fetchData = await user.logout()
             if (fetchData.status !== 200) throw new Error();
             window.location.reload();
         } catch (error) {
@@ -47,7 +47,7 @@ const LogoutComponent = () => {
         } else {
             setRoomName(room.name);
         }
-    }, [roomNo]);
+    }, [roomNo, roomInfo]);
 
     //채팅방 입/퇴장 처리
     const wsService = useContext(WebSocketContext);
@@ -58,7 +58,7 @@ const LogoutComponent = () => {
         } else {
             wsService.join(roomNo);
         }
-    }, [roomNo])
+    }, [roomNo, wsService])
 
     return (
         <div className="grid grid-cols-3 border-b border-gray-500">
@@ -116,7 +116,7 @@ const LoginComponent = ({ handleToggle }) => {
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            const fetchData = await User.login(loginInfo);
+            const fetchData = await user.login(loginInfo);
             if (fetchData.status !== 200) {
                 alert('로그인 실패');
                 return;
@@ -188,7 +188,7 @@ const RegisterComponent = ({ handleToggle }) => {
         e.preventDefault();
 
         try {
-            const fetchData = await User.regist(registerInfo);
+            const fetchData = await user.regist(registerInfo);
             if (fetchData.status !== 201) {
                 throw new Error();
             }
