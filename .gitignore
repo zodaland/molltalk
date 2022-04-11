@@ -4,6 +4,7 @@ web/npm-debug.log*
 web/yarn-debug.log*
 web/yarn-error.log*
 web/Dockerfile
+web/build
 
 api/node_modules
 api/config
