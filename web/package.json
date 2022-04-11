@@ -2,6 +2,7 @@
   "name": "molltalk",
   "license": "UNLICENSED",
   "author": "Zodaland <me@zodaland.com> (https://zodaland.com)",
+  "homepage": "https://mt.zodaland.com",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
