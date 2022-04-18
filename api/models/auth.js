@@ -1,6 +1,7 @@
 const hash = require('../library/hash');
 const jwt = require('../library/token');
 const db = require('../library/db');
+const logger = require('../library/log');
 //유저를 생성한다.
 exports.create = async (body) => {
     try {
@@ -10,7 +11,7 @@ exports.create = async (body) => {
             id
         );
         if (typeof userCheckRes === 'undefined') {
-            throw new Error();
+            throw new Error('res undefined error');
         }
         if (userCheckRes.count > 0) {
             return { status: 403 };
@@ -23,6 +24,7 @@ exports.create = async (body) => {
         );
         return { status: 201 };
     } catch (error) {
+        logger.error(error);
         throw new Error();
     }
 };
@@ -48,6 +50,7 @@ exports.login = async (body, ip) => {
 
         return { status: 200, result: { data, token } };
     } catch (error) {
+        logger.error(error);
         throw new Error();
     }
 };

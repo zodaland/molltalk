@@ -1,5 +1,6 @@
 const token = require('../../library/token');
 const messageController = require('./messageController');
+const logger = require('../../library/log');
 
 module.exports = async (wss) => {
     wss.on('connection', async (ws, req) => {
@@ -10,19 +11,23 @@ module.exports = async (wss) => {
         */
 
         //////////////////////////
-        if (req.headers['x-real-ip'] === '49.247.19.16') {
-            ws.decoded = { no: 9999, name: '다니', id: 'superzodaland' };
-            ws.room = 100;
-            wss.clients.forEach(client => {
-                if (client.room !== ws.room) return;
-                if (client.decoded.no === ws.decoded.no) return;
-                client._send({ type: 'ENTER', data: { room: ws.room, user: { name: ws.decoded.name, id: ws.decoded.id } } });
-            });
-        } else {
-            //각 웹소켓 클라이언트에 no 삽입
-            const userToken = token.get(req);
-            const decoded = await token.decode(userToken);
-            ws.decoded = decoded;
+        try {
+            if (req.headers['x-real-ip'] === '49.247.19.16') {
+                ws.decoded = { no: 9999, name: '다니', id: 'superzodaland' };
+                ws.room = 100;
+                wss.clients.forEach(client => {
+                    if (client.room !== ws.room) return;
+                    if (client.decoded.no === ws.decoded.no) return;
+                    client._send({ type: 'ENTER', data: { room: ws.room, user: { name: ws.decoded.name, id: ws.decoded.id } } });
+                });
+            } else {
+                //각 웹소켓 클라이언트에 no 삽입
+                const userToken = token.get(req);
+                const decoded = await token.decode(userToken);
+                ws.decoded = decoded;
+            }
+        } catch (error) {
+            logger.error(error);
         }
         ws._send = function(msg) {
             this.send(JSON.stringify(msg));
