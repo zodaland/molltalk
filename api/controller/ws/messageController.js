@@ -2,7 +2,6 @@ const roomModel = require('../../models/room');
 const chatModel = require('../../models/chat');
 
 exports.join = async (wss, ws, message) => {
-    const type = message.type;
     const userNo = ws.decoded.no;
     const roomNo = message.no;
     try {
@@ -21,8 +20,10 @@ exports.join = async (wss, ws, message) => {
             });
         }
         ws.room = roomNo;
+        //HEART 메시지로 인한 방 번호 입력시 여기서 리턴
+        if (message.type !== 'JOIN') return;
         const chats = await chatModel.findsByRoomNo(roomNo);
-        const joinedMsg = { type, data: { chats, room: roomNo, users: [{ id: ws.decoded.id, name: ws.decoded.name }] } };
+        const joinedMsg = { type: 'JOIN', data: { chats, room: roomNo, users: [{ id: ws.decoded.id, name: ws.decoded.name }] } };
         wss.clients.forEach(client => {
             if (!client.decoded) return;
             if (client.decoded.no === ws.decoded.no) return;

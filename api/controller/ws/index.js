@@ -67,6 +67,7 @@ module.exports = async (wss) => {
                     messageController.roomExit(wss, ws, data);
                     break;
                 case 'HEART':
+                    if (data.no && !ws.room) messageController.join(wss, ws, data);
                     break;
                 default:
             }
