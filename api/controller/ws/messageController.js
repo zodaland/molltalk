@@ -101,10 +101,8 @@ exports.invite = async (wss, ws, message) => {
 exports.exit = (wss, ws) => {
     if (!ws.room) return;
     wss.clients.forEach(client => {
-        console.log(client.decoded);
         if (ws.decoded.no === client.decoded.no) return;
         if (!client.room || ws.room !== client.room) return;
-        console.log(client.room);
         client._send({ type: 'EXIT', data: { room: ws.room, user: { id: ws.decoded.id, name: ws.decoded.name } } });
     });
     delete ws.room;
@@ -158,7 +156,6 @@ exports.roomExit = async (wss, ws, message) => {
             client._send({ type: 'SEND', data: { type: 'EXIT', id, name } });
         });
     } catch (error) {
-        console.log(error);
         ws._send({ status: 500 });
     }
 }

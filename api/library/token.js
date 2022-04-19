@@ -1,9 +1,12 @@
 const jwt = require('jsonwebtoken');
 const jwtConfig = require('../config/jwt_config');
+const logger = require('./log');
 //토큰 디코드
 exports.decode = (token) => new Promise((resolve, reject) => {
     jwt.verify(token, jwtConfig.secretKey, (error, decoded) => {
         if (error) {
+            logger.error(token);
+            logger.error(error);
             reject(error);
         }
         resolve(decoded);
@@ -30,9 +33,9 @@ exports.set = (payload) => new Promise((resolve, reject) => {
             expiresIn: '1d',
             issuer: 'zodaland.com',
             subject: 'refreshToken'
-        }, (err, token) => {
-            if (err) {
-                console.log(err);
+        }, (error, token) => {
+            if (error) {
+                logger.error(error);
                 reject();
             }
             resolve(token);

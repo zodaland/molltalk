@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const conf = require('../config/db_config');
+const logger = require('./library/log');
 mongoose.Promise = global.Promise;
 
 exports.connect = () => {
@@ -8,8 +9,8 @@ exports.connect = () => {
         console.log('Successfully connected to mongodb');
         return true;
     })
-    .catch(e => {
-        console.log(e);
+    .catch(error => {
+        logger.error(error);
         return false;
     });
 }
