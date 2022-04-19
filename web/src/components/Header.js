@@ -33,7 +33,6 @@ const LogoutComponent = () => {
             if (fetchData.status !== 200) throw new Error();
             window.location.reload();
         } catch (error) {
-            console.log(error);
             alert('로그아웃 실패');
         }
     };
@@ -64,7 +63,6 @@ const LogoutComponent = () => {
         //접속 유지 처리 및 서버 불안정으로 인한 리로드시 방 번호 전달
         clearInterval(interval.current);
         interval.current = setInterval(() => {
-            console.log(roomNo);
             wsService.heartbeat(roomNo);
         }, 500);
     }, [roomNo, wsService])
