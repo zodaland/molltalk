@@ -129,7 +129,7 @@ describe('invitationController delete 테스트', () => {
     test('invitation delete 호출 및 상태값 400 테스트', async () => {
         const status = 400;
         req.decoded = { no: 1 };
-        req.body = { no: 1 };
+        req.params = { no: 1 };
         invitationModel.delete.mockReturnValue({ status });
         await invitationController.delete(req, res);
 
@@ -139,7 +139,7 @@ describe('invitationController delete 테스트', () => {
     test('invitation delete 호출 및 200 상태값 테스트', async () => {
         const status = 200;
         req.decoded = { no: 1 };
-        req.body = { no: 1 };
+        req.params = { no: 1 };
         invitationModel.delete.mockReturnValue({ status });
         await invitationController.delete(req, res);
 
@@ -148,7 +148,7 @@ describe('invitationController delete 테스트', () => {
     });
     test('invitation delete 호출 및 에러 상태 500 테스트', async () => {
         req.decoded = { no: 1 };
-        req.body = { no: 1 };
+        req.params = { no: 1 };
         invitationModel.delete.mockReturnValue(Promise.reject());
         await invitationController.delete(req, res);
 
