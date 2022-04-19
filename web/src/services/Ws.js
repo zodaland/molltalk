@@ -12,6 +12,7 @@ function WsService(ws) {
     this.join = (no) => this.send({ type: 'JOIN', no });
     this.roomExit = (no) => this.send({ type: 'ROOMEXIT', no });
     this.roomEnter = (no) => this.send({ type: 'ROOMENTER', no });
+    this.heartbeat = (no) => this.send({ type: 'HEART', ...(no !== 0 && { no }) });
 }
 
 export default WsService;

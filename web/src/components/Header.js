@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from 'react'
+import { useState, useEffect, useContext, useRef } from 'react'
 import { login, logout, regist } from '../services/user'
 
 import { userState } from '../modules/user';
@@ -52,6 +52,8 @@ const LogoutComponent = () => {
 
     //채팅방 입/퇴장 처리
     const wsService = useContext(WebSocketContext);
+    const interval = useRef(0);
+
     useEffect(() => {
         if (!wsService) return;
         if (roomNo === 0) {
@@ -59,6 +61,12 @@ const LogoutComponent = () => {
         } else {
             wsService.join(roomNo);
         }
+        //접속 유지 처리 및 서버 불안정으로 인한 리로드시 방 번호 전달
+        clearInterval(interval.current);
+        interval.current = setInterval(() => {
+            console.log(roomNo);
+            wsService.heartbeat(roomNo);
+        }, 500);
     }, [roomNo, wsService])
 
     return (

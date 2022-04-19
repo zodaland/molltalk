@@ -24,18 +24,11 @@ const WebSocketProvider = (props) => {
             }
         };
 
-        const heartbeat = () => {
-            if (ws.current && ws.current.readyState === WebSocket.OPEN) {
-                ws.current.send(JSON.stringify({ type: 'HEART' }));
-                setTimeout(heartbeat, 500);
-            }
-        };
-
 		const webSocketUrl = `wss://api.zodaland.com`;
 
         ws.current = new WebSocket(webSocketUrl);
         setWsService(new WsService(ws.current));
-        ws.current.onopen = () => heartbeat();
+        ws.current.onopen = () => {};
         ws.current.onmessage = (evt) => {
             const data = JSON.parse(evt.data);
             setWsMsgState(data);
