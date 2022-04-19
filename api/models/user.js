@@ -1,5 +1,6 @@
 const db = require('../library/db');
 const hash = require('../library/hash');
+const logger = require('../library/log');
 
 exports.findById = async (id) => {
     try {
@@ -13,6 +14,7 @@ exports.findById = async (id) => {
         
         return { status: 200, data };
     } catch (error) {
+        logger.error(error);
         throw new Error();
     }
 }
@@ -28,6 +30,7 @@ exports.compareIp = async (ip, no) => {
         }
         return ({ status: 200 });
     } catch (error) {
+        logger.error(error);
         throw new Error();
     }
 }

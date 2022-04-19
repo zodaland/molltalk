@@ -1,4 +1,5 @@
 const db = require('../library/db');
+const logger = require('../library/log');
 //초대장을 생성한다.
 exports.create = async (roomNo, inviteUserNo, invitedUserNo) => {
     try {
@@ -7,28 +8,28 @@ exports.create = async (roomNo, inviteUserNo, invitedUserNo) => {
             'SELECT count(no) as count FROM room WHERE no = ?',
             roomNo
         );
-        if (typeof roomRes === 'undefined') throw new Error();
+        if (typeof roomRes === 'undefined') throw new Error('roomRes is undefined');
         if (roomRes.count < 1) return { status: 400 };
         //유저가 존재하는지 확인한다.
         const [userRes] = await db.execute(
             'SELECT count(no) as count FROM user where no = ?',
             invitedUserNo
         );
-        if (typeof userRes === 'undefined') throw new Error();
+        if (typeof userRes === 'undefined') throw new Error('userRes is undefined');
         if (userRes.count < 1) return { status: 400 };
         //이미 초대된 유저인지 확인한다.
         const [alreadyInviteRes] = await db.execute(
             'SELECT count(no) as count FROM invitation WHERE invite_user_no = ? AND invited_user_no = ? AND room_no = ?',
             [inviteUserNo, invitedUserNo, roomNo]
         );
-        if (typeof alreadyInviteRes === 'undefined') throw new Error();
+        if (typeof alreadyInviteRes === 'undefined') throw new Error('alreadyInviteRes is undefined');
         if (alreadyInviteRes.count > 0) return { status: 202 };
         //이미 방에 있는 유저인지 확인한다.
         const [alreadyRoomRes] = await db.execute(
             'SELECT count(no) as count FROM room_user WHERE room_no = ? AND user_no = ?',
             [roomNo, invitedUserNo]
         );
-        if (typeof alreadyRoomRes === 'undefined') throw new Error();
+        if (typeof alreadyRoomRes === 'undefined') throw new Error('alreadyRoomRes is undefined');
         if (alreadyRoomRes.count > 0) return { status: 204 };
         //초대장을 생성한다.
         await db.execute(
@@ -38,6 +39,7 @@ exports.create = async (roomNo, inviteUserNo, invitedUserNo) => {
         
         return { status: 201 };
     } catch (error) {
+        logger.error(error);
         throw new Error();
     }
 };
@@ -50,6 +52,7 @@ exports.findsByInvitedUser = async (invitedUserNo) => {
         );
         return { data, status: 200 };
     } catch (error) {
+        logger.error(error);
         throw new Error();
     }
 };
@@ -61,7 +64,7 @@ exports.delete = async (roomNo, invitedUserNo) => {
             'SELECT count(no) AS count FROM invitation WHERE room_no = ? AND invited_user_no = ?',
             [roomNo, invitedUserNo]
         );
-        if (typeof inviteRes === 'undefined') throw new Error();
+        if (typeof inviteRes === 'undefined') throw new Error('inviteRes is undefined');
         if (inviteRes.count < 1) return { status: 400 };
         //초대장을 제거한다.
         await db.execute(
@@ -70,6 +73,7 @@ exports.delete = async (roomNo, invitedUserNo) => {
         );
         return { status: 200 };
     } catch (error) {
+        logger.error(error);
         throw new Error();
     }
 }

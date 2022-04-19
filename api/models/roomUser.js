@@ -1,4 +1,5 @@
 const db = require('../library/db');
+const logger = require('../library/log');
 //유저가 방에 입장한다.
 exports.create = async (roomNo, userNo) => {
     try {
@@ -7,14 +8,14 @@ exports.create = async (roomNo, userNo) => {
             'SELECT count(no) AS count FROM invitation WHERE room_no = ? AND invited_user_no = ?',
             [roomNo, userNo]
         );
-        if (typeof inviteRes === 'undefined') throw new Error();
+        if (typeof inviteRes === 'undefined') throw new Error('inviteRes is undefined');
         if (inviteRes.count < 1) return { status: 403 };
         //이미 방에 있는지 조회
         const [roomRes] = await db.execute(
             'SELECT count(no) AS count FROM room_user where room_no = ? AND user_no = ?',
             [roomNo, userNo]
         );
-        if (typeof roomRes === 'undefined') throw new Error()
+        if (typeof roomRes === 'undefined') throw new Error('roomRes is undefined');
         if (roomRes.count > 0) return { status: 403 };
         //초대장은 제거
         await db.execute(
@@ -28,6 +29,7 @@ exports.create = async (roomNo, userNo) => {
         );
         return { status: 201 };
     } catch (error) {
+        logger.error(error);
         throw new Error();
     }
 };
@@ -41,6 +43,7 @@ exports.findRoomUsers = async (userNo) => {
         );
         return { status: 200, data };
     } catch (error) {
+        logger.error(error);
         throw new Error();
     }
 };
@@ -71,6 +74,7 @@ exports.delete = async (roomNo, userNo) => {
         }
         return { status: 200 };
     } catch (error) {
+        logger.error(error);
         throw new Error();
     }
 };

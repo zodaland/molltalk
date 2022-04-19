@@ -1,4 +1,5 @@
 const db = require('../library/db');
+const logger = require('../library/log');
 
 exports.create = async (userNo, roomName) => {
     try {
@@ -13,7 +14,7 @@ exports.create = async (userNo, roomName) => {
         );
         return ({ status: 201 });
     } catch (error) {
-        console.log(error);
+        logger.error(error);
         throw new Error();
     }
 };
@@ -26,6 +27,7 @@ exports.findsByNo = async (userNo) => {
         );
         return ({ data, status: 200 });
     } catch (error) {
+        logger.error(error);
         throw new Error();
     }
 }
@@ -38,6 +40,7 @@ exports.findNameByNo = async (roomNo) => {
         );
         return { status: 200, data };
     } catch(error) {
+        logger.error(error);
         throw new Error();
     }
 }
