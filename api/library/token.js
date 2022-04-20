@@ -15,7 +15,7 @@ exports.decode = (token) => new Promise((resolve, reject) => {
 //request내에서 토큰을 찾은 뒤 리턴
 //express : cookies, ws : headers['cookie']
 exports.get = (req) => {
-	let token = '';
+	let token = null;
 	if (req.cookies !== undefined) {
 		token = req.cookies.token;
 	} else if (req.headers['cookie'] !== undefined) {
