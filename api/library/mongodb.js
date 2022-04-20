@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const conf = require('../config/db_config');
-const logger = require('./library/log');
+const logger = require('./log');
 mongoose.Promise = global.Promise;
 
 exports.connect = () => {
