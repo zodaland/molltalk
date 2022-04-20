@@ -7,6 +7,8 @@ molltalk은 채팅 웹 어플리케이션 입니다.
 
 * 알림 : 채팅방 내 유저 초대 기능과 초대/상태 여부, 입/퇴장 실시간 알림
 
+* 쉘 접속 : 쉘 환경의 웹소켓 접속을 통한 채팅 기능 구현
+
 # SKILLS
 BackEnd : `JavaScript`, `Express.js`, `Mongoose`, `MongoDB`, `MySQL`, `WebSocket`, `Jest`
 
