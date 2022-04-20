@@ -35,7 +35,7 @@ exports.login = async (req, res) => {
         }
         const { data, token } = loginRes.result;
         res
-        .cookie('token', token, { path: '/', expires: new Date(Date.now() + (360000 * 24)), sameSite: 'none', secure: true })
+        .cookie('token', token, { path: '/', expires: new Date(Date.now() + (1000 * 60 * 60 * 8)), sameSite: 'none', secure: true })
         .status(status).json(data);
     } catch (error) {
         res.status(500).json();
