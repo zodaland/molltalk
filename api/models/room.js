@@ -44,3 +44,16 @@ exports.findNameByNo = async (roomNo) => {
         throw new Error();
     }
 }
+
+exports.findNoByName = async (name) => {
+    try {
+        const [data] = await db.execute(
+            'SELECT no FROM room WHERE name = ?',
+            name
+        );
+        return { status: 200, data };
+    } catch(error) {
+        logger.error(error);
+        throw new Error();
+    }
+}

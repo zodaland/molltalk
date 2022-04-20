@@ -54,3 +54,27 @@ exports.login = async (body, ip) => {
         throw new Error();
     }
 };
+
+exports.sshLogin = async (id, password, ip) => {
+    try {
+        const hashPassword = hash.convert(password);
+        const [verifyRes] = await db.execute(
+            'SELECT no,id, name FROM user WHERE id = ? AND password = ?',
+            [id, hashPassword]
+        );
+        if (!verifyRes) return ({ status: 401 });
+        const data = { ...verifyRes };
+
+        const unixEpoch = Math.floor(new Date().getTime() / 1000);
+        const hashIp = hash.convert(ip);
+        await db.execute(
+            "UPDATE user SET login_date = ?, ip = ? WHERE no = ?",
+            [unixEpoch, hashIp, data.no]
+        );
+
+        return { status: 200, result: { data } };
+    } catch (error) {
+        logger.error(error);
+        throw new Error();
+    }
+};
