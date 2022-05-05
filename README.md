@@ -26,6 +26,14 @@ https://mt.test.zodaland.com
 #### production
 https://mt.zodaland.com
 
+# SSH Connection
+**웹 애플리케이션을 통해 아이디와 방에 접속중인 상태여야 합니다.**
+1. `npm i -g wscat`
+2. wscat -c wss://api.zodaland.com
+3. 아이디 입력
+4. 비밀번호 입력
+5. 입장 중인 방 이름 입력
+
 # INSTALLATION
 * Node version : `v14.16.1 (LTS)`
 * Docker version : `20.10.6, build 370c289`
@@ -75,53 +83,80 @@ services:
 ```docker-compose up -d --build```
 
 # API SPECIFICATION
-http
-/auth
-post  /register
-post  /login
-any  /logout
+### http
+**/auth**
+post  /register : 회원가입
+- data
+  1. id: 아이디
+  2. password: 비밀번호
+  3. name: 이름
+post  /login : 로그인
+- data
+  1. id: 아이디
+  2. password: 비밀번호
+any   /logout
 
-/room
-post / - create
-get / - find
+**/room**
+post / - create : 방 생성
+- data
+  1. name: 방 이름
+get / - find : 접속중인 방 목록 조회
 
-/room/
-get /user - find
-post /user - create
-delete /:no/user
+get /user - find : 방에 접속중인 목록 조회
+post /user - create : 방에 유저 생성
+- data
+  1. no: 방 번호
+delete /:no/user : 방에서 유저 삭제
+- data
+  1. no: 방 번호
 
 
-/invitation
-post / - create
-get / - find
-delete /:no - delete
+**/invitation**
+post / - create : 초대장 생성
+- data
+  1. roomNo: 방번호
+  2. inviteUserNo: 초대 유저 번호
+  3. invitedUserNo: 초대받을 유저 번호
+get / - find : 초대장 조회
+delete /:no - delete : 초대장 삭제
+- data
+  1. no: 방 번호
 
-/user
-any /check - check
-get /:id - find
+**/user**
+any /check - check : 로그인 확인
+get /:id - find : 유저 조회
+- data
+  1. id: 유저 아이디
 
-wss
+### Web Socket Json schema
 
-json 데이터를 주고 받는다.
-json schema
+- required data
+  1. type: 요청 타입명
 
-필수 데이터 type: string
+#### type
+JOIN : 방 접속
+- data
+  1. no - 방번호
 
-type
-JOIN
- no - 방번호
-SEND
- content - 내용
-INVITE
- no - 초대 받을 유저 번호
-EXIT
+SEND : 메시지 전송
+- data
+  1. content - 내용
 
-ROOMENTER
- no - 방번호
-ROOMEXIT
- no - 방번호
-HEART
- no - 방번호
+INVITE : 유저 초대
+- data
+  1. no - 초대 받을 유저 번호
+
+EXIT: 방 접속해제
+
+ROOMENTER : 방 입장
+- data
+  1. no - 방번호
+ROOMEXIT : 방 퇴장
+- data
+  1. no - 방번호
+HEART : 접속 유지
+- data
+  1. no - 방번호
 
 # BROWSER SUPPORT
 * chrome
