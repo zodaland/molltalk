@@ -10,9 +10,11 @@ molltalk은 채팅 웹 어플리케이션 입니다.
 * 쉘 접속 : 쉘 환경의 웹소켓 접속을 통한 채팅 기능 구현
 
 # SKILLS
-BackEnd : `JavaScript`, `Express.js`, `Mongoose`, `MongoDB`, `MySQL`, `WebSocket`, `Jest`
+BackEnd
+- `JavaScript`, `Express.js`, `Mongoose`, `MongoDB`, `MySQL`, `WebSocket`, `Jest`
 
-FrontEnd : `JavaScript`, `React`, `Recoil`
+FrontEnd
+- `JavaScript`, `React`, `Recoil`
 
 # URL
 ### API
@@ -40,23 +42,20 @@ https://mt.zodaland.com
 * docker-compose vervison : `1.29.1, build c34c88b2`
 
 git을 통해 clone 합니다.
+
 ```git clone https://github.com/zodaland/molltalk.git```
 
 # GETTING STARTED
 * yarn version : 1.22.5
 
-## API
 ### Start with Node.js
-1. nodemon 설치
-```yarn global add nodemon@latest```
 
-2. 시작 커맨드
 ```yarn && yarn start```
 
 ### Start with Docker, docker-compose
 1. docker-compose.yml을 프로젝트 루트에 생성합니다.
 
-docker-compose.yml example
+**docker-compose.yml example**
 ```
 version: '3'
 
@@ -79,7 +78,18 @@ services:
     restart: always
 ```
 
-2. 시작 커맨드
+2. api, web 디렉터리 내 Dockerfile을 생성합니다.
+
+**Dockerfile example**
+```
+FROM node:14-alpine
+
+WORKDIR /home/node
+CMD yarn && yarn start
+```
+
+3. 시작 커맨드
+
 ```docker-compose up -d --build```
 
 # API SPECIFICATION
