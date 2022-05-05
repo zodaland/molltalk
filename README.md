@@ -171,5 +171,5 @@ HEART : 접속 유지
 # BROWSER SUPPORT
 * chrome
 * firefox
-* sapari
+* safari
 * samsung internet
