@@ -15,6 +15,7 @@ api/yarn-error.log*
 api/Dockerfile
 api/coverage
 api/test
+api/log
 
 docker-compose.yml
 .gitignore
