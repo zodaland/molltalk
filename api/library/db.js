@@ -14,10 +14,16 @@ module.exports = (() => {
         execute: (sql, param) => {
             return new Promise((resolve, reject) => {
                 pool.getConnection((err, con) => {
-                    if (err) reject(err);
+                    if (err) {
+                        reject(err);
+                        return;
+                    }
                     con.query(sql, param, (err, result) => {
                         con.release();
-                        if (err) reject(err);
+                        if (err) {
+                            reject(err);
+                            return;
+                        }
                         resolve(result);
                     });
                 });
