@@ -28,7 +28,7 @@ https://mt.test.zodaland.com
 #### production
 https://mt.zodaland.com
 
-# SSH Connection
+# CLI Connection
 **웹 애플리케이션을 통해 아이디와 방에 접속중인 상태여야 합니다.**
 1. `npm i -g wscat`
 2. wscat -c wss://api.zodaland.com
